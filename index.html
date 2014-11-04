@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Jump n' Run</title>
+        <link href="style.css" type="text/css" rel="stylesheet" />
+        <script src="jquery-1.11.1.min.js" type="text/javascript"></script>
+        <script src="game.js" type="text/javascript"></script>
+    </head>
+    <body>
+        <div class="debug"></div>
+        <div class="game">
+            <div class="player"></div>
+            <div class="item-1 collision"></div>
+            <div class="item-2 collision"></div>
+        </div>
+    </body>
+    <script>
+        game($('.game'))
+    </script>
+</html>
