@@ -12,46 +12,19 @@ body {
 }
 
 .debug {
-    height: 80px;
-    width: 200px;
-    background-color: #FF8000;
-    padding: 5px;
+    display: block;
+    margin: auto;
+    height: 100px;
+    width: 500px;
+    background-color: white;
+    padding-left: 20px;
 }
 
-.game {
-    width: 1000px;
-    height: 500px;
+#game {
     position: absolute;
     left: 50%;
     top: 50%;
     margin: -250px 0 0 -500px;
     background-color: #FFFFFF;
     border: 1px solid #DDDDDD
-}
-
-.player {
-    position: absolute;
-    height: 40px;
-    width: 40px;
-    background-image: url('images/player.png');
-}
-
-.item-1 {
-    position: absolute;
-    left: 300px;
-    top: 400px;
-    height: 20px;
-    width: 200px;
-    background-color: #000000;
-    color: #FFFFFF;
-}
-
-.item-2 {
-    position: absolute;
-    left: 700px;
-    top: 250px;
-    height: 20px;
-    width: 300px;
-    background-color: #000000;
-    color: #FFFFFF;
 }
