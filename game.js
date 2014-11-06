@@ -11,7 +11,7 @@
 
     function Player() {
         this.size     = {x: 40, y: 40}
-        this.position = {x: 0, y: 0}
+        this.position = {x: 0, y: 460}
         this.velocity = {x: 0, y: 0}
         this.speed    = 5
         this.jump     = 10
@@ -71,8 +71,12 @@
             player.velocity.x = player.speed;
         }
 
-
-        player.velocity.y += player.gravity
+        if (player.jumping) {
+            player.velocity.y += player.gravity
+        }
+        else {
+            player.velocity.y = 0
+        }
         move(modifier)
         enforceBoundingBox()
     }
@@ -109,7 +113,7 @@
                 }
                 else if (player.jumping && !player.dblJump) {
                     player.dblJump = true
-                    player.velocity.y = -player.jump*0.8
+                    player.velocity.y = -player.jump * 0.8
                 }
                 break
             case 'ArrowDown':
