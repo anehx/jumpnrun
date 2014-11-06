@@ -18,6 +18,7 @@
         this.stomp    = 15
         this.gravity  = 0.5
         this.jumping  = false
+        this.dblJump  = false
         this.img      = new Image()
         this.img.src  = 'images/player.png'
     }
@@ -54,6 +55,7 @@
         if (player.position.y + player.size.y > canvas.height) {
             player.position.y = canvas.height - player.size.y
             player.jumping = false
+            player.dblJump = false
         }
         else if (player.position.y < 0) {
             player.position.y = 0
@@ -87,9 +89,9 @@
         update(delta / 10)
         render()
         $('.debug').html(
-            'velX: ' + player.velocity.x + '\t\t' + 'velY: ' + player.velocity.y +
-            '<br>posX: ' + player.position.x + '\t\t' +  'posY: ' + player.position.y +
-            '<br>Jumping?: ' + player.jumping
+            'velX: ' + player.velocity.x + '      ' + 'velY: ' + player.velocity.y +
+            '<br>posX: ' + player.position.x + '      ' +  'posY: ' + player.position.y +
+            '<br>Jumping?: ' + player.jumping + '      ' + 'dJumping?: ' + player.dblJump
         )
 
         then = now
@@ -103,6 +105,11 @@
                 if(!player.jumping) {
                     player.jumping = true
                     player.velocity.y = -player.jump
+                    console.log('jump')
+                }
+                else if (player.jumping && !player.dblJump) {
+                    player.dblJump = true
+                    player.velocity.y = -player.jump*0.8
                 }
                 break
             case 'ArrowDown':
