@@ -42,7 +42,7 @@
                 player.jumping = false;
                 player.dblJump = false;
             } else if (dir === "t") {
-                player.velocity.y *= -1;
+                player.velocity.y = player.gravity * 2;
             }
         }
         if (player.grounded) {
@@ -152,7 +152,7 @@
             player.dblJump = false
         }
         else if (player.position.y < 0) {
-            player.position.y = 0
+            player.velocity.y = player.gravity * 2
         }
     }
 
@@ -210,7 +210,9 @@
                 break
             case 'ArrowDown':
             case 'Down':
-                player.velocity.y = player.stomp
+                if(player.jumping && !player.grounded) {
+                    player.velocity.y = player.stomp
+                }
                 break
         }
     }
