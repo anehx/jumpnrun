@@ -14,11 +14,12 @@
         this.position = {x: 0, y: 460}
         this.velocity = {x: 0, y: 0}
         this.speed    = 5
-        this.jump     = 10
-        this.stomp    = 15
-        this.gravity  = 0.5
+        this.jump     = 15
+        this.stomp    = 25
+        this.gravity  = 1
         this.jumping  = false
         this.dblJump  = false
+        this.grounded = false
         this.img      = new Image()
         this.img.src  = 'images/player.png'
     }
@@ -28,12 +29,66 @@
         this.position.y += this.velocity.y * timeElapsed
     }
 
+    function collide() {
+        player.grounded = false
+        for (var i = 0; i < boxes.length; i++) {
+            var dir = colCheck(player, boxes[i])
+            if (dir === "l" || dir === "r") {
+                player.velocity.x = 0;
+                player.jumping = false;
+                player.dblJump = false;
+            } else if (dir === "b") {
+                player.grounded = true;
+                player.jumping = false;
+                player.dblJump = false;
+            } else if (dir === "t") {
+                player.velocity.y *= -1;
+            }
+        }
+        if (player.grounded) {
+            player.velocity.y = 0
+        }
+    }
+
     function render() {
-        ctx.clearRect(0,0,1000,600);
+        ctx.clearRect(0,0,1000,600)
+        ctx.fillStyle = "black"
+        ctx.beginPath()
+        for (var i = 0; i < boxes.length; i++) {
+            ctx.rect(boxes[i].position.x, boxes[i].position.y, boxes[i].size.x, boxes[i].size.y);
+        }
+        ctx.fill()
+
         ctx.drawImage(player.img, player.position.x, player.position.y)
     }
 
     var player = new Player()
+    var boxes = []
+
+    boxes.push({
+        position: {x: 500, y: 350},
+        size: {x: 200, y: 10}
+    })
+    boxes.push({
+        position: {x: 50, y: 400},
+        size: {x: 150, y: 10}
+    })
+    boxes.push({
+        position: {x: 200, y: 200},
+        size: {x: 200, y: 10}
+    })
+    boxes.push({
+        position: {x: 10, y: 100},
+        size: {x: 150, y: 10}
+    })
+    boxes.push({
+        position: {x: 780, y: 250},
+        size: {x: 200, y: 10}
+    })
+    boxes.push({
+        position: {x: 550, y: 100},
+        size: {x: 170, y: 10}
+    })
 
     var keysDown = {}
 
@@ -45,6 +100,44 @@
         delete keysDown[e.keyCode]
     }, false)
 
+    function colCheck(shapeA, shapeB) {
+        // get the vectors to check against
+        var vX = (shapeA.position.x + (shapeA.size.x / 2)) - (shapeB.position.x + (shapeB.size.x / 2))
+        var vY = (shapeA.position.y + (shapeA.size.y / 2)) - (shapeB.position.y + (shapeB.size.y / 2))
+        // add the half widths and half heights of the objects
+        var hWidths  = (shapeA.size.x / 2) + (shapeB.size.x / 2)
+        var hHeights = (shapeA.size.y / 2) + (shapeB.size.y / 2)
+        var colDir = null;
+
+        // if the x and y vector are less than the half width or half height, they we must be inside the object, causing a collision
+        if (Math.abs(vX) < hWidths && Math.abs(vY) < hHeights) {
+            var oX = hWidths - Math.abs(vX)
+            var oY = hHeights - Math.abs(vY)
+            if (oX >= oY) {
+                // figures out on which side we are colliding (top, bottom, left, or right)
+                if (vY > 0) {
+                    colDir = "t";
+                    shapeA.position.y += oY;
+                }
+                else {
+                    colDir = "b";
+                    shapeA.position.y -= oY;
+                }
+            }
+            else {
+                if (vX > 0) {
+                    colDir = "l";
+                    shapeA.position.x += oX;
+                }
+                else {
+                    colDir = "r";
+                    shapeA.position.x -= oX;
+                }
+            }
+        }
+        return colDir;
+    }
+
     function enforceBoundingBox() {
         if (player.position.x + player.size.x > canvas.width) {
             player.position.x = canvas.width - player.size.x
@@ -55,6 +148,7 @@
         if (player.position.y + player.size.y > canvas.height) {
             player.position.y = canvas.height - player.size.y
             player.jumping = false
+            player.grounded = true
             player.dblJump = false
         }
         else if (player.position.y < 0) {
@@ -71,13 +165,10 @@
             player.velocity.x = player.speed;
         }
 
-        if (player.jumping) {
-            player.velocity.y += player.gravity
-        }
-        else {
-            player.velocity.y = 0
-        }
+        player.velocity.y += player.gravity
+
         move(modifier)
+        collide()
         enforceBoundingBox()
     }
 
@@ -95,7 +186,8 @@
         $('.debug').html(
             'velX: ' + player.velocity.x + '      ' + 'velY: ' + player.velocity.y +
             '<br>posX: ' + player.position.x + '      ' +  'posY: ' + player.position.y +
-            '<br>Jumping?: ' + player.jumping + '      ' + 'dJumping?: ' + player.dblJump
+            '<br>Jumping?: ' + player.jumping + '      ' + 'dJumping?: ' + player.dblJump +
+            '<br>Grounded?: ' + player.grounded
         )
 
         then = now
@@ -106,10 +198,10 @@
         switch(keycode.key) {
             case 'ArrowUp':
             case 'Up':
-                if(!player.jumping) {
+                if(!player.jumping && player.grounded) {
                     player.jumping = true
+                    player.grounded = false
                     player.velocity.y = -player.jump
-                    console.log('jump')
                 }
                 else if (player.jumping && !player.dblJump) {
                     player.dblJump = true

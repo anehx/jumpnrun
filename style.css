@@ -28,3 +28,13 @@ body {
     background-color: #FFFFFF;
     border: 1px solid #DDDDDD
 }
+
+.collide {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100px;
+    width: 200px;
+    background-color: white;
+    padding-left: 20px;
+}
