@@ -14,9 +14,9 @@
         this.position = {x: 0, y: 460}
         this.velocity = {x: 0, y: 0}
         this.speed    = 5
-        this.jump     = 15
-        this.stomp    = 25
-        this.gravity  = 1
+        this.jump     = 10
+        this.stomp    = 15
+        this.gravity  = 0.5
         this.jumping  = false
         this.dblJump  = false
         this.grounded = false
