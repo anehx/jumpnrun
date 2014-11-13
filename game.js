@@ -10,7 +10,7 @@
     var maxFall = 5
 
     function Player() {
-        this.size     = {x: 40, y: 40}
+        this.size     = {x: 32, y: 40}
         this.position = {x: 0, y: 460}
         this.velocity = {x: 0, y: 0}
         this.speed    = 5
@@ -21,7 +21,7 @@
         this.dblJump  = false
         this.grounded = false
         this.img      = new Image()
-        this.img.src  = 'images/player.png'
+        this.img.src  = 'images/player-right.png'
     }
 
     Player.prototype.move = function(timeElapsed) {
@@ -59,7 +59,12 @@
         }
         ctx.fill()
 
+        ctx.save()
+        if (player.img.flipped) {
+            ctx.scale(-1, 1)
+        }
         ctx.drawImage(player.img, player.position.x, player.position.y)
+        ctx.restore()
     }
 
     var player = new Player()
@@ -160,9 +165,11 @@
         player.velocity.x = 0
         if (37 in keysDown) { // Player holding left
             player.velocity.x = -player.speed;
+            player.img.src = 'images/player-left.png'
         }
         if (39 in keysDown) { // Player holding right
             player.velocity.x = player.speed;
+            player.img.src = 'images/player-right.png'
         }
 
         player.velocity.y += player.gravity
@@ -203,7 +210,7 @@
                     player.grounded = false
                     player.velocity.y = -player.jump
                 }
-                else if (player.jumping && !player.dblJump) {
+                else if (!player.dblJump) {
                     player.dblJump = true
                     player.velocity.y = -player.jump * 0.8
                 }
