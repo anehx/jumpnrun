@@ -1,7 +1,5 @@
 (function(document, $) {
     "use strict";
-    var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-    window.requestAnimationFrame = requestAnimationFrame;
 
     var canvas = document.getElementById('game')
     var ctx    = canvas.getContext('2d')
@@ -215,7 +213,7 @@
             }
         ])
 
-        requestAnimationFrame(animate)
+        requestNextAnimationFrame(animate)
     }
 
     function calculateFps(now) {
@@ -264,6 +262,6 @@
         }
     })
 
-    requestAnimationFrame(animate)
+    requestNextAnimationFrame(animate)
 
 })(document, jQuery);
