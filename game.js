@@ -155,6 +155,7 @@
         }
         if (player.position.y + player.size.y > canvas.height) {
             player.position.y = canvas.height - player.size.y
+            player.velocity.y = 0
             player.jumping = false
             player.grounded = true
             player.dblJump = false
@@ -179,7 +180,6 @@
         player.velocity.y += player.gravity
 
         movePlayer()
-        collide()
         enforceBoundingBox()
         ctx.clearRect(0,0,1000,600)
         drawPlayer()
@@ -189,6 +189,7 @@
     function movePlayer() {
         player.position.x = player.position.x + player.velocity.x
         player.position.y = player.position.y + player.velocity.y
+        collide()
     }
 
     function animate(now) {
