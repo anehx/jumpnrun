@@ -202,9 +202,8 @@
     }
 
     function key(keycode) {
-        switch(keycode.key) {
-            case 'ArrowUp':
-            case 'Up':
+        switch(keycode.keyCode) {
+            case 38:
                 if(!player.jumping && player.grounded) {
                     player.jumping = true
                     player.grounded = false
@@ -215,8 +214,7 @@
                     player.velocity.y = -player.jump * 0.8
                 }
                 break
-            case 'ArrowDown':
-            case 'Down':
+            case 40:
                 if(player.jumping && !player.grounded) {
                     player.velocity.y = player.stomp
                 }
