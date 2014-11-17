@@ -4,29 +4,63 @@
     window.requestAnimationFrame = requestAnimationFrame;
 
     var canvas = document.getElementById('game')
-    var ctx = canvas.getContext('2d')
+    var ctx    = canvas.getContext('2d')
+    var fps
+    var lastAnimationFrameTime = 0
+    var lastFpsUpdateTime      = 0
 
-    var maxJump = 20
-    var maxFall = 5
 
     function Player() {
         this.size     = {x: 32, y: 40}
         this.position = {x: 0, y: 460}
         this.velocity = {x: 0, y: 0}
-        this.speed    = 5
-        this.jump     = 10
-        this.stomp    = 15
-        this.gravity  = 0.5
+        this.speed    = 8
+        this.jump     = 16
+        this.stomp    = 20
+        this.gravity  = 1
         this.jumping  = false
         this.dblJump  = false
-        this.grounded = false
+        this.grounded = true
         this.img      = new Image()
         this.img.src  = 'images/player-right.png'
     }
 
-    Player.prototype.move = function(timeElapsed) {
-        this.position.x += this.velocity.x * timeElapsed
-        this.position.y += this.velocity.y * timeElapsed
+    var player = new Player()
+    var boxes  = []
+
+    boxes.push(
+        {
+            position: {x: 500, y: 350},
+            size: {x: 200, y: 10}
+        },
+        {
+            position: {x: 50, y: 400},
+            size: {x: 150, y: 10}
+        },
+        {
+            position: {x: 200, y: 200},
+            size: {x: 200, y: 10}
+        },
+        {
+            position: {x: 10, y: 100},
+            size: {x: 150, y: 10}
+        },
+        {
+            position: {x: 780, y: 250},
+            size: {x: 200, y: 10}
+        },
+        {
+            position: {x: 550, y: 100},
+            size: {x: 170, y: 10}
+        }
+    )
+
+    function debug(elements) {
+        var txt = ''
+        for (var i = 0; i < elements.length; i++) {
+            txt += '<br>' + elements[i].name + ': ' + elements[i].content
+        }
+        $('.debug').html(txt)
     }
 
     function collide() {
@@ -50,50 +84,19 @@
         }
     }
 
-    function render() {
-        ctx.clearRect(0,0,1000,600)
+
+    function drawPlayer() {
+        ctx.drawImage(player.img, player.position.x, player.position.y)
+    }
+
+    function drawBoxes() {
         ctx.fillStyle = "black"
         ctx.beginPath()
         for (var i = 0; i < boxes.length; i++) {
             ctx.rect(boxes[i].position.x, boxes[i].position.y, boxes[i].size.x, boxes[i].size.y);
         }
         ctx.fill()
-
-        ctx.save()
-        if (player.img.flipped) {
-            ctx.scale(-1, 1)
-        }
-        ctx.drawImage(player.img, player.position.x, player.position.y)
-        ctx.restore()
     }
-
-    var player = new Player()
-    var boxes = []
-
-    boxes.push({
-        position: {x: 500, y: 350},
-        size: {x: 200, y: 10}
-    })
-    boxes.push({
-        position: {x: 50, y: 400},
-        size: {x: 150, y: 10}
-    })
-    boxes.push({
-        position: {x: 200, y: 200},
-        size: {x: 200, y: 10}
-    })
-    boxes.push({
-        position: {x: 10, y: 100},
-        size: {x: 150, y: 10}
-    })
-    boxes.push({
-        position: {x: 780, y: 250},
-        size: {x: 200, y: 10}
-    })
-    boxes.push({
-        position: {x: 550, y: 100},
-        size: {x: 170, y: 10}
-    })
 
     var keysDown = {}
 
@@ -161,48 +164,83 @@
         }
     }
 
-    function update(modifier) {
+    function draw() {
         player.velocity.x = 0
-        if (37 in keysDown) { // Player holding left
+
+        if (37 in keysDown) {
             player.velocity.x = -player.speed;
             player.img.src = 'images/player-left.png'
         }
-        if (39 in keysDown) { // Player holding right
+        if (39 in keysDown) {
             player.velocity.x = player.speed;
             player.img.src = 'images/player-right.png'
         }
 
         player.velocity.y += player.gravity
 
-        move(modifier)
+        movePlayer()
         collide()
         enforceBoundingBox()
+        ctx.clearRect(0,0,1000,600)
+        drawPlayer()
+        drawBoxes()
     }
 
-    function move(modifier) {
-        player.position.x = player.position.x + (player.velocity.x * modifier)
-        player.position.y = player.position.y + (player.velocity.y * modifier)
+    function movePlayer() {
+        player.position.x = player.position.x + player.velocity.x
+        player.position.y = player.position.y + player.velocity.y
     }
 
-    function main() {
-        var now = Date.now()
-        var delta = now - then
+    function animate(now) {
+        fps = calculateFps(now)
+        draw()
 
-        update(delta / 10)
-        render()
-        $('.debug').html(
-            'velX: ' + player.velocity.x + '      ' + 'velY: ' + player.velocity.y +
-            '<br>posX: ' + player.position.x + '      ' +  'posY: ' + player.position.y +
-            '<br>Jumping?: ' + player.jumping + '      ' + 'dJumping?: ' + player.dblJump +
-            '<br>Grounded?: ' + player.grounded
-        )
+        debug([
+            {
+                name : 'posX',
+                content : player.position.x.toFixed(0)
+            },
+            {
+                name : 'posY',
+                content : player.position.y.toFixed(0)
+            },
+            {
+                name : 'velX',
+                content : player.velocity.x.toFixed(0)
+            },
+            {
+                name : 'velY',
+                content : player.velocity.y.toFixed(0)
+            }
+        ])
 
-        then = now
-        requestAnimationFrame(main)
+        requestAnimationFrame(animate)
     }
 
-    function key(keycode) {
-        switch(keycode.keyCode) {
+    function calculateFps(now) {
+        var fps = 1000 / (now - lastAnimationFrameTime);
+        lastAnimationFrameTime = now;
+
+        if (now - lastFpsUpdateTime > 1000) {
+            lastFpsUpdateTime = now
+            var color
+            if (fps >= 60) {
+                color = 'green'
+            }
+            else if (fps >= 30) {
+                color = 'orange'
+            }
+            else if (fps < 30) {
+                color = 'red'
+            }
+            $('.fps').html('<font color="' + color + '">' + fps.toFixed(0) + ' fps</font>')
+        }
+
+        return fps
+    }
+
+    $(document).keydown(function(e) {
+        switch(e.which) {
             case 38:
                 if(!player.jumping && player.grounded) {
                     player.jumping = true
@@ -214,16 +252,17 @@
                     player.velocity.y = -player.jump * 0.8
                 }
                 break
+
             case 40:
                 if(player.jumping && !player.grounded) {
                     player.velocity.y = player.stomp
                 }
                 break
-        }
-    }
 
-    var then = Date.now()
-    main()
-    $(document).keypress(key)
+            default: return
+        }
+    })
+
+    requestAnimationFrame(animate)
 
 })(document, jQuery);

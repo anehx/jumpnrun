@@ -12,12 +12,25 @@ body {
 }
 
 .debug {
-    display: block;
-    margin: auto;
-    height: 100px;
-    width: 500px;
-    background-color: white;
-    padding-left: 20px;
+    width: 100px;
+    background-color: black;
+    font: 10px monospace;
+    color: white;
+    padding: 0 15px 15px;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.fps {
+    width: 50px;
+    background-color: black;
+    font: 10px monospace;
+    padding: 15px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    text-align: center;
 }
 
 #game {
@@ -26,15 +39,6 @@ body {
     top: 50%;
     margin: -250px 0 0 -500px;
     background-color: #FFFFFF;
-    border: 1px solid #DDDDDD
-}
-
-.collide {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100px;
-    width: 200px;
-    background-color: white;
-    padding-left: 20px;
+    border: 1px solid #DDDDDD;
+    overflow: hidden;
 }
