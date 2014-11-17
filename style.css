@@ -23,10 +23,10 @@ body {
 }
 
 .fps {
-    width: 50px;
-    background-color: black;
-    font: 10px monospace;
-    padding: 15px;
+    width: 100px;
+    background-color: transparent;
+    font: bold 16px monospace;
+    padding: 20px;
     position: absolute;
     right: 0;
     top: 0;
