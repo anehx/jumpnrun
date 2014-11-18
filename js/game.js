@@ -6,17 +6,18 @@
     var fps                    = 0
     var lastAnimationFrameTime = 0
     var lastFpsUpdateTime      = 0
-    var debugWindow            = $('.debug')
-    var fpsWindow              = $('.fps')
+    var goodie
 
     function draw() {
         player.move()
         player.collide()
+        player.collectGoodie()
         player.enforceBoundingBox()
 
-        ctx.clearRect(0,0,1000,600)
+        ctx.clearRect(0,0,1280,720)
         player.draw()
         drawBoxes()
+        goodie.draw()
     }
 
     function debug() {
@@ -43,7 +44,7 @@
         for (var i = 0; i < elements.length; i++) {
             txt += '<br>' + elements[i].name + ': ' + elements[i].content
         }
-        debugWindow.html(txt)
+        //debugWindow.html(txt)
     }
 
     function animate(now) {
@@ -64,9 +65,18 @@
         this.jumping  = false
         this.dblJump  = false
         this.grounded = true
+        this.score    = 0
         this.img      = new Image()
         this.img.src  = 'images/player-right.png'
     }
+
+    function createGoodie() {
+        goodie = new Goodie({
+            x: Math.floor(Math.random() * canvas.width),
+            y: Math.floor(Math.random() * 9 + 1) * canvas.height/10 - 25
+        })
+    }
+
 
     Player.prototype = {
         move: function() {
@@ -79,7 +89,9 @@
         },
 
         draw: function() {
-            ctx.drawImage(this.img, this.position.x, this.position.y)
+            ctx.drawImage(this.img, this.position.x - 3, this.position.y)
+            ctx.font = '15px monospace'
+            ctx.fillText('Score: ' + this.score, 10, 20)
         },
 
         collide: function() {
@@ -104,11 +116,11 @@
         },
 
         enforceBoundingBox: function() {
-            if (this.position.x + this.size.x > canvas.width) {
-                this.position.x = canvas.width - this.size.x
+            if (this.position.x + 3 + this.size.x > canvas.width) {
+                this.position.x = canvas.width - this.size.x - 3
             }
-            else if (this.position.x < 0) {
-                this.position.x = 0
+            else if (this.position.x - 3 < 0) {
+                this.position.x = 3
             }
             if (this.position.y + this.size.y > canvas.height) {
                 this.position.y = canvas.height - this.size.y
@@ -119,6 +131,14 @@
             }
             else if (this.position.y < 0) {
                 this.velocity.y = this.gravity * 2
+            }
+        },
+
+        collectGoodie: function() {
+            if (colCheck(this, goodie)) {
+                goodie = null
+                createGoodie()
+                this.score += 1
             }
         }
     }
@@ -142,20 +162,28 @@
         }
     }
 
+    function Goodie(position) {
+        this.position = position
+        this.size = {x: 10, y: 10}
+        this.img = new Image()
+        this.img.src = 'images/star.png'
+    }
+
+    Goodie.prototype = {
+        draw: function() {
+            ctx.drawImage(this.img, this.position.x, this.position.y)
+        }
+    }
 
     var player = new Player()
     var boxes  = []
 
     function randomBoxes() {
-        for (var i = 0; i < 20; i++) {
+        for (var i = 0; i < 30; i++) {
             boxes.push(
                 new Box({
                     x: Math.floor(Math.random() * canvas.width),
-                    y: Math.floor(Math.random() * 9 + 1) * canvas.height/10 
-                },
-                {
-                    x: Math.floor(Math.random() * 120) + 30,
-                    y: 12
+                    y: Math.floor(Math.random() * 9 + 1) * canvas.height / 10
                 })
             )
         }
@@ -225,7 +253,7 @@
             else if (fps < 30) {
                 color = 'red'
             }
-            fpsWindow.html('<font color="' + color + '">' + fps.toFixed(0) + ' fps</font>')
+            //fpsWindow.html('<font color="' + color + '">' + fps.toFixed(0) + ' fps</font>')
         }
 
         return fps
@@ -282,6 +310,6 @@
     })
 
     requestNextAnimationFrame(animate)
-
+    createGoodie()
 
 })(document, jQuery)
