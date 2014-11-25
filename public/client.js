@@ -82,8 +82,12 @@ $(function() {
     })
 
     game.socket.on('scored', function() {
-        console.log('opponent scored')
         game.players.other.score++
+    })
+
+    game.socket.on('resetscore', function() {
+        game.players.other.score = 0
+        game.players.self.score = 0
     })
 
     setInterval(sendPos, 10)

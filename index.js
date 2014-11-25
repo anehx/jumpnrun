@@ -76,9 +76,11 @@ sio.sockets.on('connection', function (client) {
         if (client.game.player_count == 2) {
             if (client.game.player_host == client) {
                 client.game.player_client.emit('state', 'wait')
+                client.game.player_client.emit('resetscore')
             }
             else {
                 client.game.player_host.emit('state', 'wait')
+                client.game.player_host.emit('resetscore')
             }
         }
         game_server.quitGame(client)
