@@ -1,0 +1,20 @@
+html, body {
+    height: 100%
+}
+
+body {
+    background-color: #EEEEEE;
+    text-align: center;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#game {
+    margin: 50px auto;
+    background-color: #FFFFFF;
+    border: 1px solid #DDDDDD;
+    overflow: hidden;
+}
