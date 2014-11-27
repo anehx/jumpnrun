@@ -19,6 +19,10 @@ function GameCore() {
         self:  new Player(this),
         other: new Player(this)
     }
+
+    this.pattern = new Image()
+    this.pattern.src = 'public/images/pattern.png'
+    this.pat = this.ctx.createPattern(this.pattern, 'repeat-x')
 }
 
 GameCore.prototype = {
@@ -35,7 +39,7 @@ GameCore.prototype = {
     },
 
     drawBoxes: function() {
-        this.ctx.fillStyle = 'black'
+        this.ctx.fillStyle = this.pat
         this.ctx.beginPath()
         for (var i = 0; i < this.boxes.length; i++) {
             var box = this.boxes[i]
@@ -69,7 +73,7 @@ GameCore.prototype = {
         }
         else if (this.state == 'wait') {
             this.clearScreen()
-            this.drawText(20, this.world.y - 40, 25, 'Waiting for opponent...')
+            this.drawText(50, this.world.y - 100, 25, 'Waiting for opponent...')
         }
     },
 
@@ -186,8 +190,8 @@ Player.prototype = {
         else if (this.position.x < 0) {
             this.position.x = 0
         }
-        if (this.position.y + this.size.y > this.game.world.y) {
-            this.position.y = this.game.world.y - this.size.y
+        if (this.position.y + this.size.y + 12 > this.game.world.y) {
+            this.position.y = this.game.world.y - this.size.y - 12
             this.velocity.y = 0
             this.jumping = false
             this.grounded = true

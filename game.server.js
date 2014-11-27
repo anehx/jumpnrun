@@ -117,7 +117,7 @@ GameLobby.prototype = {
                 },
                 size: {
                     x: Math.floor(Math.random() * 150) + 40,
-                    y: 12
+                    y: 15
                 }
             }
             this.boxes.push(randomBox)
