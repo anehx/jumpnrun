@@ -2,11 +2,12 @@
 
 function GameCore() {
     // game core
-    this.gravity = 1
+    this.gravity = 0.7
     this.state   = 'wait'
     this.goodies = []
     this.socket  = null
     this.boxes   = null
+    this.dt      = new Date().getTime()
     this.world   = {
         x: 1000,
         y: 500
@@ -64,12 +65,12 @@ GameCore.prototype = {
         this.clearScreen()
         this.drawBoxes()
         this.drawGoodie()
-        this.drawPlayers()
+        this.drawPlayers(now)
     },
 
-    animate: function() {
+    animate: function(now) {
         if (this.state == 'play') {
-            this.draw()
+            this.draw(now)
         }
         else if (this.state == 'wait') {
             this.clearScreen()
@@ -127,8 +128,8 @@ function Player(game) {
     this.id                  = null
 
     // moving variables
-    this.speed               = 6
-    this.jump                = 16
+    this.speed               = 4
+    this.jump                = 13
     this.stomp               = 20
 
     // states
@@ -147,14 +148,16 @@ Player.prototype = {
         this.img.src = 'public/images/'+color+'-player-right.png'
     },
 
-    move: function() {
-        this.velocity.y += this.game.gravity
-        this.position.y = this.position.y + this.velocity.y
-        this.position.x = this.position.x + this.velocity.x
+    move: function(now) {
+        var delta = (this.game.dt - now) / 1000000000000
+
+        this.velocity.y += this.game.gravity * delta
+        this.position.y = this.position.y + this.velocity.y * delta
+        this.position.x = this.position.x + this.velocity.x * delta
     },
 
     draw: function(now) {
-        this.move()
+        this.move(now)
         this.collide()
         this.enforceBoundingBox()
         this.collectGoodie()

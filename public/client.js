@@ -33,9 +33,9 @@ $(function() {
         game.boxes = boxes
     })
 
-    function animate() {
+    function animate(now) {
         if (game.goodies !== [] && game.boxes !== null) {
-            game.animate()
+            game.animate(now)
         }
         requestNextAnimationFrame(animate)
     }
