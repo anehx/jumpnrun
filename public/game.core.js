@@ -23,7 +23,7 @@ function GameCore() {
 
     this.pattern = new Image()
     this.pattern.src = 'public/images/pattern.png'
-    this.pat = this.ctx.createPattern(this.pattern, 'repeat-x')
+    this.pat = this.ctx.createPattern(this.pattern, 'repeat')
 }
 
 GameCore.prototype = {
