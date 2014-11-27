@@ -203,6 +203,7 @@ Player.prototype = {
             var goodie = this.game.goodies[i]
             if (this.game.colCheck(this, goodie)) {
                 this.speed += 0.1
+                this.game.players.other.speed = 6
                 this.score++
                 this.game.socket.emit('scored')
             }

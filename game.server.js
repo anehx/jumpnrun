@@ -77,7 +77,7 @@ gameServer.quitGame = function(client) {
     else {
         // client was client so just leave
         gameInstance.players.client = null
-        gameInstance.playersCount--
+        gameInstance.playerCount--
     }
 
     console.log('\t\tleft game ' + gameInstance.id)
