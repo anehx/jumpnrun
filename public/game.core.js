@@ -4,10 +4,7 @@ function GameCore() {
     // game core
     this.gravity = 1
     this.state   = 'wait'
-
-    // world configuration - will
-    // be configured in login func
-    this.goodie  = null
+    this.goodies = []
     this.socket  = null
     this.boxes   = null
     this.world   = {
@@ -19,8 +16,8 @@ function GameCore() {
     this.ctx     = this.canvas.getContext('2d')
 
     this.players = {
-        self:  new Player(this, 'red'),
-        other: new Player(this, 'green')
+        self:  new Player(this),
+        other: new Player(this)
     }
 }
 
@@ -48,7 +45,10 @@ GameCore.prototype = {
     },
 
     drawGoodie: function() {
-        this.ctx.drawImage(this.goodie.img, this.goodie.position.x, this.goodie.position.y)
+        for (var i = 0; i < this.goodies.length; i++) {
+            var goodie = this.goodies[i]
+            this.ctx.drawImage(goodie.img, goodie.position.x, goodie.position.y)
+        }
     },
 
     drawPlayers: function(now) {
@@ -112,7 +112,7 @@ GameCore.prototype = {
     }
 }
 
-function Player(game, color) {
+function Player(game) {
     // current instances
     this.game                = game
 
@@ -131,13 +131,18 @@ function Player(game, color) {
     this.jumping             = false
     this.doubleJump          = false
     this.grounded            = true
+    this.color               = null
 
     // player style
     this.img                 = new Image()
-    this.img.src             = 'public/images/'+color+'-player-right.png'
 }
 
 Player.prototype = {
+    setColor: function(color) {
+        this.color   = color
+        this.img.src = 'public/images/'+color+'-player-right.png'
+    },
+
     move: function() {
         this.velocity.y += this.game.gravity
         this.position.y = this.position.y + this.velocity.y
@@ -194,25 +199,20 @@ Player.prototype = {
     },
 
     collectGoodie: function() {
-        if (this.game.colCheck(this, this.game.goodie)) {
-            //this.game.goodie = new Goodie()
-            this.score++
-            this.game.socket.emit('scored')
-            console.log('scored')
+        for (var i = 0; i < this.game.goodies.length; i++) {
+            var goodie = this.game.goodies[i]
+            if (this.game.colCheck(this, goodie)) {
+                this.speed += 0.1
+                this.score++
+                this.game.socket.emit('scored')
+            }
         }
-    },
-
-    sendPosition: function() {
-        this.io.emit('sendPosition', this)
-    },
+    }
 }
 
-function Goodie(world) {
+function Goodie(position) {
     this.size     = {x: 10, y: 10}
     this.img      = new Image()
     this.img.src  = 'public/images/star.png'
-    this.position = {
-        x: Math.floor(Math.random() * world.x),
-        y: Math.floor(Math.random() * 7 + 1) * world.y / 6 - 50
-    }
+    this.position = position
 }

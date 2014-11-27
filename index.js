@@ -18,7 +18,7 @@ app.get('/', function( req, res ){
 app.use('/public', express.static(__dirname + '/public'))
 
 /* Socket.IO server set up. */
-var game_server = require('./game.server.js')
+var gameServer = require('./game.server.js')
 
 sio = io.listen(server)
 
@@ -38,51 +38,44 @@ function getOpponent(client) {
 }
 
 sio.sockets.on('connection', function (client) {
+    // set client id
     client.id = UUID()
-    client.emit('clientconnected', { id: client.id } )
+    client.emit('connected', {id:client.id})
     console.log('\tsocket.io:: player ' + client.id + ' connected')
 
-    var game = game_server.findGame(client)
-    var opponent = null
+    var game = gameServer.findGame(client)
 
-    client.emit('getgoodie', game.goodie)
-    client.emit('getboxes', game.boxes)
+    client.emit('goodies', game.goodies)
+    client.emit('boxes',   game.boxes)
+    client.emit('state',   game.state)
+    client.emit('color',   client.color)
 
-    if (client.game.player_count == 2) {
+    client.on('joined', function() {
+        client.opponent = getOpponent(client)
+        client.opponent.opponent = client
 
-        client.emit('state', 'play')
-        game.player_host.emit('state', 'play')
-    }
-    else {
-        client.emit('state', 'wait')
-    }
+        console.log(client.opponent)
+    })
 
-    client.on('sendPos', function(data) {
-        opponent = getOpponent(client)
-        if (opponent) {
-            opponent.emit('updatePos', data)
-        }
+    client.on('move', function(data) {
+        client.opponent.emit('updatePos', data)
     })
 
     client.on('scored', function() {
-        opponent = getOpponent(client)
-        if (opponent) {
-            opponent.emit('scored')
-        }
+        client.game.goodies = []
+        client.game.generateGoodies(1)
+        client.emit('goodies', game.goodies)
+        client.opponent.emit('goodies', game.goodies)
+        client.opponent.emit('updateScore')
     })
 
     client.on('disconnect', function () {
         console.log('\tsocket.io:: client ' + client.id + ' disconnected')
-        if (client.game.player_count == 2) {
-            if (client.game.player_host == client) {
-                client.game.player_client.emit('state', 'wait')
-                client.game.player_client.emit('resetscore')
-            }
-            else {
-                client.game.player_host.emit('state', 'wait')
-                client.game.player_host.emit('resetscore')
-            }
+        if (client.game.playerCount == 2) {
+            client.opponent.emit('resetscore')
+            client.opponent.emit('state', 'wait')
         }
-        game_server.quitGame(client)
+
+        gameServer.quitGame(client)
     })
 })
