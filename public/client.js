@@ -31,6 +31,7 @@ $(function() {
     function animate(now) {
         if (game.goodies !== [] && game.boxes !== null) {
             game.players.self.walk(keys)
+            game.players.self.collectGoodie()
             game.animate(now)
         }
         requestNextAnimationFrame(animate)
@@ -69,16 +70,25 @@ $(function() {
 
     function sendPos() {
         if (game.state == 'play') {
-            game.socket.emit('move', {position: game.players.self.position})
+            game.socket.emit('move', {
+                position: game.players.self.position,
+                walking: game.players.self.walking,
+                jumping: game.players.self.jumping,
+                frameIndex: game.players.self.frameIndex
+            })
         }
     }
 
     game.socket.on('updatePos', function(data) {
         game.players.other.position = data.position
+        game.players.other.walking = data.walking
+        game.players.other.jumping = data.jumping
+        game.players.other.frameIndex = data.frameIndex
     })
 
-    game.socket.on('updateScore', function() {
-        game.players.other.score++
+    game.socket.on('updateScore', function(data) {
+        game.players.other.score = data.other_score
+        game.players.self.score = data.self_score
     })
 
     game.socket.on('joined', function() {

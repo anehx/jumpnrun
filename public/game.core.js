@@ -7,6 +7,7 @@ function GameCore() {
     this.goodies = []
     this.socket  = null
     this.boxes   = null
+    this.bullets = []
     this.dt      = new Date().getTime()
     this.world   = {
         x: 1000,
@@ -176,7 +177,6 @@ Player.prototype = {
         this.move(now)
         this.collide()
         this.enforceBoundingBox()
-        this.collectGoodie()
         this.game.drawText(this.position.x + this.size.x, this.position.y - 10, 11, 'Score: ' + this.score)
 
 
@@ -269,7 +269,7 @@ Player.prototype = {
         for (var i = 0; i < this.game.goodies.length; i++) {
             var goodie = this.game.goodies[i]
             if (this.game.colCheck(this, goodie)) {
-                this.score++
+                this.game.goodies.length = 0
                 this.game.socket.emit('scored')
             }
         }

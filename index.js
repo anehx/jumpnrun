@@ -38,8 +38,9 @@ function getOpponent(client) {
 }
 
 sio.sockets.on('connection', function (client) {
-    // set client id
+    // set client id and score
     client.id = UUID()
+    client.score = 0
     client.emit('connected', {id:client.id})
     console.log('\tsocket.io:: player ' + client.id + ' connected')
 
@@ -62,11 +63,13 @@ sio.sockets.on('connection', function (client) {
     })
 
     client.on('scored', function() {
-        client.game.goodies = []
+        client.score++
+        client.game.goodies.length = 0
         client.game.generateGoodies(1)
         client.emit('goodies', game.goodies)
         client.opponent.emit('goodies', game.goodies)
-        client.opponent.emit('updateScore')
+        client.opponent.emit('updateScore', {other_score: client.score,          self_score: client.opponent.score})
+        client.emit         ('updateScore', {other_score: client.opponent.score, self_score: client.score         })
     })
 
     client.on('disconnect', function () {

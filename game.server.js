@@ -67,7 +67,7 @@ gameServer.quitGame = function(client) {
         this.gameCount--
         return
     }
-    else if (gameInstance.player_host == client) {
+    else if (gameInstance.players.host == client) {
         // client was host so make the client host
         // and leave
         gameInstance.players.host   = gameInstance.players.client
