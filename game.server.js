@@ -41,6 +41,7 @@ gameServer.findGame = function(client) {
                 gameInstance.state                 = 'play'
                 gameInstance.playerCount++
                 gameInstance.players.host.emit('joined')
+                client.emit('type', 'luigi')
                 client.opponent = gameInstance.players.host
                 gameInstance.players.host.opponent = client
 

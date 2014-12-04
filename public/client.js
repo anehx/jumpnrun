@@ -1,8 +1,11 @@
 $(function() {
     "use strict";
 
+    var keys = []
+
     game = new GameCore()
     game.socket = io.connect('http://10.9.5.220:3000')
+    game.players.other.img.src = 'public/images/luigi.png'
 
     game.socket.on('state', function(state) {
         game.state = state
@@ -16,37 +19,25 @@ $(function() {
         }
     })
 
-    game.socket.on('color', function(color) {
-        switch(color) {
-            case 'red':
-                game.players.self.setColor('red')
-                game.players.other.setColor('green')
-                break
-            case 'green':
-                game.players.self.setColor('green')
-                game.players.other.setColor('red')
-                break
-        }
-    })
-
     game.socket.on('boxes', function(boxes) {
         game.boxes = boxes
     })
 
+    game.socket.on('type', function(type) {
+        game.players.self.img.src = 'public/images/luigi.png'
+        game.players.other.img.src = 'public/images/mario.png'
+    })
+
     function animate(now) {
         if (game.goodies !== [] && game.boxes !== null) {
+            game.players.self.walk(keys)
             game.animate(now)
         }
         requestNextAnimationFrame(animate)
     }
 
-    $(document).keydown(function(e) {
-        switch(e.which) {
-            case 37: // left arrow
-                game.players.self.velocity.x = -game.players.self.speed
-                game.players.self.img.src = 'public/images/'+game.player.self.color+'-player-left.png'
-                break
-
+    $(document).keypress(function(e) {
+        switch(e.keyCode) {
             case 38: // up arrow
                 if (!game.players.self.jumping && game.players.self.grounded) {
                     game.players.self.jumping = true
@@ -58,12 +49,6 @@ $(function() {
                     game.players.self.velocity.y = -game.players.self.jump * 0.8
                 }
                 break
-
-            case 39: // right arrow
-                game.players.self.velocity.x = game.players.self.speed
-                game.players.self.img.src = 'public/images/'+game.player.self.color+'-player-right.png'
-                break
-
             case 40: // down arrow
                 if (game.players.self.jumping && !game.players.self.grounded) {
                     game.players.self.velocity.y = game.players.self.stomp
@@ -75,18 +60,11 @@ $(function() {
         e.preventDefault()
     })
 
-    $(document).keyup(function(e) {
-        switch(e.which) {
-            case 39:
-            case 37:
-                // stop moving left/right if
-                // no left/right arrow key is pressed
-                game.players.self.velocity.x = 0
-                break
-
-            default: return
-        }
-        e.preventDefault()
+    document.body.addEventListener("keydown", function (e) {
+        keys[e.keyCode] = true;
+    })
+    document.body.addEventListener("keyup", function (e) {
+        keys[e.keyCode] = false;
     })
 
     function sendPos() {
@@ -109,7 +87,7 @@ $(function() {
 
     game.socket.on('resetscore', function() {
         game.players.other.score = 0
-        game.players.self.score = 0
+        game.players.self.score  = 0
     })
 
     setInterval(sendPos, 10)

@@ -2,7 +2,7 @@
 
 function GameCore() {
     // game core
-    this.gravity = 0.7
+    this.gravity = 0.3
     this.state   = 'wait'
     this.goodies = []
     this.socket  = null
@@ -122,15 +122,17 @@ function Player(game) {
     this.game                = game
 
     this.velocity            = {x: 0,  y: 0}
-    this.size                = {x: 32, y: 40}
+    this.size                = {x: 26, y: 40}
     this.position            = {x: 0,  y: this.game.world.y - this.size.y}
     this.score               = 0
     this.id                  = null
+    this.lastUpdate          = 0
+    this.updateDelta         = 0
 
     // moving variables
-    this.speed               = 4
-    this.jump                = 13
-    this.stomp               = 20
+    this.speed               = 3
+    this.jump                = 8
+    this.stomp               = 15
 
     // states
     this.jumping             = false
@@ -140,12 +142,26 @@ function Player(game) {
 
     // player style
     this.img                 = new Image()
+    this.img.src             = 'public/images/mario.png'
+    this.frame               = 0
+    this.frameIndex          = 0
+    this.walking             = false
 }
 
 Player.prototype = {
-    setColor: function(color) {
-        this.color   = color
-        this.img.src = 'public/images/'+color+'-player-right.png'
+    walk: function(keys) {
+        this.velocity.x = 0
+        this.walking = false
+        if (keys[37]) {
+            this.velocity.x = -this.speed
+            this.walking = true
+            this.frameIndex = 4
+        }
+        if (keys[39]) {
+            this.velocity.x = this.speed
+            this.walking = true
+            this.frameIndex = 0
+        }
     },
 
     move: function(now) {
@@ -161,8 +177,52 @@ Player.prototype = {
         this.collide()
         this.enforceBoundingBox()
         this.collectGoodie()
-        this.game.ctx.drawImage(this.img, this.position.x, this.position.y)
-        this.game.drawText(this.position.x + 30, this.position.y - 10, 11, 'Score: ' + this.score)
+        this.game.drawText(this.position.x + this.size.x, this.position.y - 10, 11, 'Score: ' + this.score)
+
+
+        if (this.jumping) {
+            this.frame = 3 + this.frameIndex
+        }
+        else if (this.walking) {
+            var delta = Date.now() - this.lastUpdate
+            if (this.updateDelta > 100) {
+                this.updateDelta = 0
+                if (this.frame - this.frameIndex < 2 && this.game.dt >= 3) {
+                    if (this.frameIndex == 4) {
+                        this.frame = 5
+                    }
+                    this.frame++
+                }
+                else {
+                    this.frame = this.frameIndex
+                }
+            }
+            else {
+                this.updateDelta += delta
+            }
+        }
+        else if (this.grounded) {
+            this.frame = this.frameIndex
+        }
+        this.lastUpdate = Date.now()
+
+        this.game.ctx.save()
+        if (this.dir == -1) {
+            this.game.ctx.translate(-this.img.width, 0)
+            this.game.ctx.scale(this.dir, 1)
+        }
+        this.game.ctx.drawImage(
+            this.img,
+            this.frame*this.size.x,
+            0,
+            this.size.x,
+            this.size.y,
+            this.position.x,
+            this.position.y,
+            this.size.x,
+            this.size.y
+        )
+        this.game.ctx.restore()
     },
 
     collide: function() {
@@ -209,8 +269,6 @@ Player.prototype = {
         for (var i = 0; i < this.game.goodies.length; i++) {
             var goodie = this.game.goodies[i]
             if (this.game.colCheck(this, goodie)) {
-                this.speed += 0.1
-                this.game.players.other.speed = 6
                 this.score++
                 this.game.socket.emit('scored')
             }
