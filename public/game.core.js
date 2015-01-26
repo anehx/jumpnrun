@@ -13,6 +13,7 @@ function GameCore() {
         x: 1000,
         y: 500
     }
+    this.volume  = 1
 
     this.canvas  = document.getElementById('game')
     this.ctx     = this.canvas.getContext('2d')
@@ -25,9 +26,17 @@ function GameCore() {
     this.pattern = new Image()
     this.pattern.src = 'public/images/pattern.png'
     this.pat = this.ctx.createPattern(this.pattern, 'repeat')
+
 }
 
 GameCore.prototype = {
+    countdownGoodies: function(now) {
+
+        for (var i = 0; i < this.goodies.length; i++) {
+            var goodie = this.goodies[i]
+            goodie.timeLeft -= (this.dt - now) / 100000000000
+        }
+    },
     drawText: function drawText(x, y, size, text){
         this.ctx.fillStyle = 'rgb(0,0,0)';
         this.ctx.font = size + 'px Monospace';
@@ -54,6 +63,8 @@ GameCore.prototype = {
         for (var i = 0; i < this.goodies.length; i++) {
             var goodie = this.goodies[i]
             this.ctx.drawImage(goodie.img, goodie.position.x, goodie.position.y)
+            this.drawText(goodie.position.x+ goodie.size.x, goodie.position.y - 10, 10, Math.floor(goodie.timeLeft/1000 - 2))
+            this.ctx.drawImage(goodie.img, goodie.position.x, goodie.position.y)
         }
     },
 
@@ -67,6 +78,7 @@ GameCore.prototype = {
         this.drawBoxes()
         this.drawGoodie()
         this.drawPlayers(now)
+        this.countdownGoodies(now)
     },
 
     animate: function(now) {
@@ -269,6 +281,7 @@ Player.prototype = {
         for (var i = 0; i < this.game.goodies.length; i++) {
             var goodie = this.game.goodies[i]
             if (this.game.colCheck(this, goodie)) {
+                ion.sound.play('coin', {volume: (0.5 * this.game.volume)})
                 this.game.goodies.length = 0
                 this.game.socket.emit('scored')
             }
@@ -281,4 +294,5 @@ function Goodie(position) {
     this.img      = new Image()
     this.img.src  = 'public/images/star.png'
     this.position = position
+    this.timeLeft = position.timeLeft
 }

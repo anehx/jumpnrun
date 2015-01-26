@@ -17,5 +17,20 @@ body {
     background-color: #FFFFFF;
     border: 1px solid #DDDDDD;
     overflow: hidden;
-    background: url('../images/background.jpg')
+    background-image: url('../images/background.jpg');
+}
+
+.sound {
+    background-size: 100%;
+    height: 30px;
+    width: 30px;
+    position: absolute;
+    top: 50px;
+    left: 10%;
+    background-image: url('../images/sound_play.png');
+}
+
+
+.sound.mute {
+    background-image: url('../images/sound_mute.png');
 }
