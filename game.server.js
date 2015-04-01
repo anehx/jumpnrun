@@ -93,7 +93,7 @@ function GameLobby(client) {
     this.playerCount    = 1
     this.state          = 'wait'
     this.goodieTimer    = undefined
-    
+
     this.goodieTime = 17000
 
     // world definition

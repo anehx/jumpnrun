@@ -1,6 +1,8 @@
 $(function() {
     "use strict";
 
+    var server = 'http://localhost:3000'
+
     ion.sound({
         sounds: [
             {
@@ -22,7 +24,7 @@ $(function() {
 
     game = new GameCore()
     ion.sound.play('background', {loop: true, volume: 0.3})
-    game.socket = io.connect('http://10.9.5.220:3000')
+    game.socket = io.connect(server)
     game.players.other.img.src = 'public/images/luigi.png'
 
     game.socket.on('state', function(state) {

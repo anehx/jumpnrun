@@ -1,5 +1,15 @@
-"dependencies": {
-    "express": "latest",
-    "socket.io": "latest",
-    "node-uuid": "latest"
+{
+    "name": "jumpnrun",
+    "description": "A simple node js game",
+    "author": "Jonas Metzener <anehxdzn@gmail.com>",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/anehx/jumpnrun"
+    },
+    "dependencies": {
+        "express": "latest",
+        "socket.io": "latest",
+        "node-uuid": "latest"
+    },
+    "license": "GPLv2"
 }
