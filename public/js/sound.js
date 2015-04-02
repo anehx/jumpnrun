@@ -1,12 +1,11 @@
-jQuery(function($) {
+$(function() {
   "use strict";
   if (!createjs.Sound.initializeDefaultPlugins()) return
 
   var mute   = false;
-  var path   = 'public/assets/sounds/'
+  var path   = 'assets/sounds/'
   var sounds = [
     {id:'background', src:'background.ogg'},
-    //{id:'collect', src:'collect.ogg'},
   ]
 
   createjs.Sound.alternateExtensions = ['mp3']

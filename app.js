@@ -11,12 +11,6 @@ var server    = http.createServer(app)
 server.listen(gameport)
 console.log('\texpress:: server listening on port ' + gameport + '\n')
 
-app.get('/', function( req, res ){
-  res.sendFile(__dirname + '/views/index.html');
-})
-
-app.use('/public', express.static(__dirname + '/public/'))
-
 /* Socket.IO server set up. */
 var GameServer = require('./lib/models/server.js')
 var gameServer = new GameServer()
