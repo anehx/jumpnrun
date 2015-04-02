@@ -32,12 +32,12 @@ function getOpponent(client) {
   return opponent
 }
 
-sio.sockets.on('connection', function (client) {
+sio.sockets.on('connection', function(client) {
   // set client id and score
   client.id = UUID()
   client.score = 0
   client.goodieTimer = undefined
-  client.emit('connected', {id:client.id})
+  client.emit('connected', { id:client.id })
   console.log('\tsocket.io:: player ' + client.id + ' connected')
 
   var game = gameServer.findGame(client)
@@ -60,11 +60,11 @@ sio.sockets.on('connection', function (client) {
     client.score++
     client.game.resetGoodies()
 
-    client.opponent.emit('updateScore', {other_score: client.score,          self_score: client.opponent.score})
-    client.emit         ('updateScore', {other_score: client.opponent.score, self_score: client.score         })
+    client.opponent.emit('updateScore', { other_score: client.score,          self_score: client.opponent.score })
+    client.emit         ('updateScore', { other_score: client.opponent.score, self_score: client.score })
   })
 
-  client.on('disconnect', function () {
+  client.on('disconnect', function() {
     console.log('\tsocket.io:: client ' + client.id + ' disconnected')
     if (client.game.playerCount === 2) {
       client.opponent.emit('resetscore')

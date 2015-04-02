@@ -3,8 +3,6 @@ $(function() {
 
   var fps    = 60
   var server = 'http://localhost:3000'
-
-
   var keys = []
 
   var game = new GameCore()
@@ -66,10 +64,10 @@ $(function() {
     e.preventDefault()
   })
 
-  document.body.addEventListener("keydown", function (e) {
+  document.body.addEventListener('keydown', function(e) {
     keys[e.keyCode] = true;
   })
-  document.body.addEventListener("keyup", function (e) {
+  document.body.addEventListener('keyup', function(e) {
     keys[e.keyCode] = false;
   })
 
@@ -105,7 +103,6 @@ $(function() {
     game.players.self.score  = 0
   })
 
-
-  setInterval(sendPos, 1000/fps)
+  setInterval(sendPos, 1000 / fps)
   requestNextAnimationFrame(animate)
 });

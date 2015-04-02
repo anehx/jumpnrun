@@ -37,7 +37,7 @@ GameCore.prototype = {
     }
   },
 
-  drawText: function drawText(x, y, size, text){
+  drawText: function drawText(x, y, size, text) {
     this.ctx.fillStyle = 'rgb(0,0,0)';
     this.ctx.font = size + 'px Monospace';
     this.ctx.textAlign = 'left';
@@ -63,7 +63,10 @@ GameCore.prototype = {
     for (var i = 0; i < this.goodies.length; i++) {
       var goodie = this.goodies[i]
       this.ctx.drawImage(goodie.img, goodie.position.x, goodie.position.y)
-      this.drawText(goodie.position.x+ goodie.size.x, goodie.position.y - 10, 10, Math.floor(goodie.timeLeft/1000 - 2))
+      this.drawText(
+        goodie.position.x + goodie.size.x,
+        goodie.position.y - 10, 10, Math.floor(goodie.timeLeft / 1000 - 2)
+      )
       this.ctx.drawImage(goodie.img, goodie.position.x, goodie.position.y)
     }
   },
@@ -100,28 +103,28 @@ GameCore.prototype = {
     var hHeights = (shapeA.size.y / 2) + (shapeB.size.y / 2)
     var colDir = null
 
-    // if the x and y vector are less than the half width or half height, they we must be inside the object, causing a collision
+    // if the x and y vector are less than the half width or half height - collision
     if (Math.abs(vX) < hWidths && Math.abs(vY) < hHeights) {
       var oX = hWidths - Math.abs(vX)
       var oY = hHeights - Math.abs(vY)
       if (oX >= oY) {
         // figures out on which side we are colliding (top, bottom, left, or right)
         if (vY > 0) {
-          colDir = "t"
+          colDir = 't'
           shapeA.position.y += oY
         }
         else {
-          colDir = "b"
+          colDir = 'b'
           shapeA.position.y -= oY
         }
       }
       else {
         if (vX > 0) {
-          colDir = "l"
+          colDir = 'l'
           shapeA.position.x += oX
         }
         else {
-          colDir = "r"
+          colDir = 'r'
           shapeA.position.x -= oX
         }
       }
@@ -134,9 +137,9 @@ function Player(game) {
   // current instances
   this.game                = game
 
-  this.velocity            = {x: 0,  y: 0}
-  this.size                = {x: 26, y: 40}
-  this.position            = {x: 0,  y: this.game.world.y - this.size.y}
+  this.velocity            = { x: 0,  y: 0 }
+  this.size                = { x: 26, y: 40 }
+  this.position            = { x: 0,  y: this.game.world.y - this.size.y }
   this.score               = 0
   this.id                  = null
   this.lastUpdate          = 0
@@ -191,7 +194,6 @@ Player.prototype = {
     this.enforceBoundingBox()
     this.game.drawText(this.position.x + this.size.x, this.position.y - 10, 11, 'Score: ' + this.score)
 
-
     if (this.jumping) {
       this.frame = 3 + this.frameIndex
     }
@@ -225,7 +227,7 @@ Player.prototype = {
     }
     this.game.ctx.drawImage(
       this.img,
-      this.frame*this.size.x,
+      this.frame * this.size.x,
       0,
       this.size.x,
       this.size.y,
@@ -241,15 +243,15 @@ Player.prototype = {
     this.grounded = false
     for (var i = 0; i < this.game.boxes.length; i++) {
       var dir = this.game.colCheck(this, this.game.boxes[i])
-      if (dir === "l" || dir === "r") {
+      if (dir === 'l' || dir === 'r') {
         this.velocity.x = 0
         this.jumping = false
         this.dblJump = false
-      } else if (dir === "b") {
+      } else if (dir === 'b') {
         this.grounded = true
         this.jumping = false
         this.dblJump = false
-      } else if (dir === "t") {
+      } else if (dir === 't') {
         this.velocity.y = this.game.gravity * 2
       }
     }
@@ -289,7 +291,7 @@ Player.prototype = {
 }
 
 function Goodie(position) {
-  this.size     = {x: 10, y: 10}
+  this.size     = { x: 10, y: 10 }
   this.img      = new Image()
   this.img.src  = 'assets/images/star.png'
   this.position = position
