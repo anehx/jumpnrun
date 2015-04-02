@@ -1,4 +1,4 @@
-/*jshint strict:false */
+'use strict'
 
 var gameport  = 3000
 var io        = require('socket.io')
@@ -20,7 +20,7 @@ app.use('/public', express.static(__dirname + '/public'))
 /* Socket.IO server set up. */
 var gameServer = require('./game.server.js')
 
-sio = io.listen(server)
+var sio = io.listen(server)
 
 function getOpponent(client) {
     var opponent

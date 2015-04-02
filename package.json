@@ -1,6 +1,7 @@
 {
     "name": "jumpnrun",
     "description": "A simple node js game",
+    "version": "0.0.0",
     "author": "Jonas Metzener <anehxdzn@gmail.com>",
     "repository": {
         "type": "git",
@@ -9,7 +10,8 @@
     "dependencies": {
         "express": "latest",
         "socket.io": "latest",
-        "node-uuid": "latest"
+        "node-uuid": "latest",
+        "morgan": "latest"
     },
     "license": "GPLv2"
 }

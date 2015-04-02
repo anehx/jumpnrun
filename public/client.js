@@ -1,29 +1,13 @@
-$(function() {
+jQuery(function($) {
     "use strict";
 
+    var fps    = 60
     var server = 'http://localhost:3000'
 
-    ion.sound({
-        sounds: [
-            {
-                name: "background"
-            },
-            {
-                name: "jump",
-            },
-            {
-                name: "coin",
-            }
-        ],
-        volume: 1,
-        path: "public/sounds/",
-        preload: true
-    })
 
     var keys = []
 
     var game = new GameCore()
-    ion.sound.play('background', {loop: true, volume: 0.3})
     game.socket = io.connect(server)
     game.players.other.img.src = 'public/images/luigi.png'
 
@@ -61,13 +45,11 @@ $(function() {
         switch(e.keyCode) {
             case 38: // up arrow
                 if (!game.players.self.jumping && game.players.self.grounded) {
-                    ion.sound.play('jump', {volume: (0.5 * game.volume)})
                     game.players.self.jumping = true
                     game.players.self.grounded = false
                     game.players.self.velocity.y = -game.players.self.jump
                 }
                 else if (!game.players.self.dblJump) {
-                    ion.sound.play('jump', {volume: (0.5 * game.volume)})
                     game.players.self.dblJump = true
                     game.players.self.velocity.y = -game.players.self.jump * 0.8
                 }
@@ -122,17 +104,7 @@ $(function() {
         game.players.self.score  = 0
     })
 
-    $('.sound').on('click', function(){
-        $(this).toggleClass('mute')
-        game.volume = (($(this).hasClass('mute')) ? 0 : 1)
-        if (game.volume === 0) {
-            ion.sound.stop('background')
-        }
-        else {
-            ion.sound.play('background', {loop: true, volume: 0.6})
-        }
-    })
 
-    setInterval(sendPos, 1000/45)
+    setInterval(sendPos, 1000/fps)
     requestNextAnimationFrame(animate)
 })
