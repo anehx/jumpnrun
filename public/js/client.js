@@ -9,7 +9,7 @@ jQuery(function($) {
 
     var game = new GameCore()
     game.socket = io.connect(server)
-    game.players.other.img.src = 'public/images/luigi.png'
+    game.players.other.img.src = 'public/assets/images/luigi.png'
 
     game.socket.on('state', function(state) {
         game.state = state
@@ -28,8 +28,8 @@ jQuery(function($) {
     })
 
     game.socket.on('type', function(type) {
-        game.players.self.img.src = 'public/images/luigi.png'
-        game.players.other.img.src = 'public/images/mario.png'
+        game.players.self.img.src = 'public/assets/images/luigi.png'
+        game.players.other.img.src = 'public/assets/images/mario.png'
     })
 
     function animate(now) {
@@ -73,7 +73,7 @@ jQuery(function($) {
     })
 
     function sendPos() {
-        if (game.state == 'play') {
+        if (game.state === 'play') {
             game.socket.emit('move', {
                 position: game.players.self.position,
                 walking: game.players.self.walking,

@@ -3,7 +3,7 @@ jQuery(function($) {
   if (!createjs.Sound.initializeDefaultPlugins()) return
 
   var mute   = false;
-  var path   = 'public/assets/'
+  var path   = 'public/assets/sounds/'
   var sounds = [
     {id:'background', src:'background.ogg'},
     //{id:'collect', src:'collect.ogg'},
