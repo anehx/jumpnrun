@@ -1,17 +1,17 @@
 {
-    "name": "jumpnrun",
-    "description": "A simple node js game",
-    "version": "0.0.0",
-    "author": "Jonas Metzener <anehxdzn@gmail.com>",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/anehx/jumpnrun"
-    },
-    "dependencies": {
-        "express": "latest",
-        "socket.io": "latest",
-        "node-uuid": "latest",
-        "morgan": "latest"
-    },
-    "license": "GPLv2"
+  "name": "jumpnrun",
+  "description": "A simple node js game",
+  "version": "0.0.0",
+  "author": "Jonas Metzener <anehxdzn@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anehx/jumpnrun"
+  },
+  "dependencies": {
+    "express": "^4.12.3",
+    "morgan": "^1.5.2",
+    "node-uuid": "^1.4.3",
+    "socket.io": "^1.3.5"
+  },
+  "license": "GPLv2"
 }
