@@ -22,7 +22,7 @@ $(function() {
 
     var keys = []
 
-    game = new GameCore()
+    var game = new GameCore()
     ion.sound.play('background', {loop: true, volume: 0.3})
     game.socket = io.connect(server)
     game.players.other.img.src = 'public/images/luigi.png'
