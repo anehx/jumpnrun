@@ -2,7 +2,7 @@ install:
 	@npm install
 
 run:
-	@node app.js
+	@vagrant ssh -c "cd /vagrant; nodemon app.js"
 
 vagrant:
 	@vagrant plugin install vagrant-hostsupdater

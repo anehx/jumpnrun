@@ -2,7 +2,7 @@ $(function() {
   'use strict'
 
   var fps    = 60
-  var server = 'http://localhost:3000'
+  var server = 'http://jumpnrun.vm:3000'
   var keys = []
 
   var game = new GameCore()
