@@ -1,76 +1,67 @@
 'use strict'
 
-var gameport  = 3000
-var io        = require('socket.io')
-var express   = require('express')
-var UUID      = require('node-uuid')
-var http      = require('http')
-var app       = express()
-var server    = http.createServer(app)
+let gameport  = 3000
+let io        = require('socket.io')
+let express   = require('express')
+let http      = require('http')
+let app       = express()
+let server    = http.createServer(app)
 
 server.listen(gameport)
-console.log('\texpress:: server listening on port ' + gameport + '\n')
+console.log('\texpress::\tserver listening on port ' + gameport + '\n')
 
 /* Socket.IO server set up. */
-var GameServer = require('./lib/models/server.js')
-var gameServer = new GameServer()
-
-var sio = io.listen(server)
-
-function getOpponent(client) {
-  var opponent
-  if (client.game.player_count !== 2) {
-    opponent = null
-  }
-
-  if (client.game.player_host === client) {
-    opponent = client.game.player_client
-  }
-  else {
-    opponent = client.game.player_host
-  }
-  return opponent
-}
+let gameServer = require('./lib/models/server.js')
+let sio = io.listen(server)
 
 sio.sockets.on('connection', function(client) {
-  // set client id and score
-  client.id = UUID()
-  client.score = 0
-  client.goodieTimer = undefined
+  client.gameID = null
   client.emit('connected', { id:client.id })
-  console.log('\tsocket.io:: player ' + client.id + ' connected')
+  console.log('\tsocket.io::\tclient ' + client.id + ' connected')
 
-  var game = gameServer.findGame(client)
+  // join the lobby
+  client.join('lobby')
 
-  client.emit('goodies', game.goodies)
-  client.emit('boxes',   game.boxes)
-  client.emit('state',   game.state)
-  client.emit('color',   client.color)
+  let idleClients = sio.sockets.adapter.rooms.lobby
+  if (Object.keys(idleClients).length === 2) {
+    let game = gameServer.createGame()
 
-  client.on('joined', function() {
-    client.opponent = getOpponent(client)
-    client.opponent.opponent = client
-  })
+    for (let clientID in idleClients) {
+      let c = sio.sockets.connected[clientID]
+      c.leave('lobby')
+      c.gameID = game.addClient(c)
+      c.score = 0
+    }
 
-  client.on('move', function(data) {
-    client.opponent.emit('updatePos', data)
+    sio.sockets.in(game.id).emit('joinedGame', {
+      'world': game.world,
+      'id':    game.id
+    })
+  }
+
+  client.on('sendPosition', function(data) {
+    client.broadcast.to(client.gameID).emit('updatePosition', data)
   })
 
   client.on('scored', function() {
-    client.score++
-    client.game.resetGoodies()
+    let game = gameServer.games[client.gameID]
+    let data = game.score(client)
+    client.broadcast.to(client.gameID).emit('updateScore', data.score)
+    sio.sockets.in(client.gameID).emit('updateGoodies', data.goodies)
+  })
 
-    client.opponent.emit('updateScore', { other_score: client.score,          self_score: client.opponent.score })
-    client.emit         ('updateScore', { other_score: client.opponent.score, self_score: client.score })
+  client.on('resetGoodies', function() {
+    let game = gameServer.games[client.gameID]
+    let data = game.resetGoodies()
+    sio.sockets.in(client.gameID).emit('updateGoodies', data)
   })
 
   client.on('disconnect', function() {
-    console.log('\tsocket.io:: client ' + client.id + ' disconnected')
-    if (client.game.playerCount === 2) {
-      client.opponent.emit('resetscore')
-      client.opponent.emit('state', 'wait')
+    if (client.gameID) {
+      let game = gameServer.games[client.gameID]
+      sio.sockets.in(client.gameID).emit('playerLeft')
+      gameServer.quitGame(game)
     }
-
-    gameServer.quitGame(client)
+    console.log('\tsocket.io::\tclient ' + client.id + ' disconnected')
   })
 })

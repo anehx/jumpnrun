@@ -3,7 +3,7 @@ $(function() {
 
   if (!createjs.Sound.initializeDefaultPlugins()) return
 
-  var mute   = false
+  var mute   = true
   var path   = 'assets/sounds/'
   var sounds = [
     { id: 'background', src: 'background.ogg' },
@@ -14,6 +14,9 @@ $(function() {
     createjs.Sound.play('background', { loop:-1 })
   })
   createjs.Sound.registerSounds(sounds, path)
+
+  $('.sound').toggleClass('mute', mute)
+  createjs.Sound.setMute(mute)
 
   $('.sound').on('click', function() {
     mute = !mute

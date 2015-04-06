@@ -1,48 +1,58 @@
-/*jshint browser:true */
+/* jshint browser:true */
 'use strict'
 
-function GameCore() {
-  // game core
-  this.gravity = 0.3
-  this.state   = 'wait'
-  this.goodies = []
-  this.socket  = null
-  this.boxes   = null
-  this.bullets = []
-  this.dt      = new Date().getTime()
-  this.world   = {
-    x: 1000,
-    y: 500
+function GameCore(options) {
+  this.id            = options.id
+  this.dt            = new Date().getTime()
+
+  this.world         = {
+    gravity: 0.3,
+    x: options.world.x,
+    y: options.world.y,
+    boxes:   this.parseBoxes(options.world.boxes),
+    goodies: this.parseGoodies(options.world.goodies)
   }
-  this.volume  = 1
 
-  this.canvas  = document.getElementById('game')
-  this.ctx     = this.canvas.getContext('2d')
+  this.canvas        = document.createElement('canvas')
+  this.canvas.id     = 'game'
+  this.canvas.width  = this.world.x
+  this.canvas.height = this.world.y
+  this.ctx           = this.canvas.getContext('2d')
 
-  this.players = {
+  this.players       = {
     self:  new Player(this),
     other: new Player(this)
   }
-
-  this.pattern = new Image()
-  this.pattern.src = 'assets/images/pattern.png'
-  this.pat = this.ctx.createPattern(this.pattern, 'repeat')
 }
 
 GameCore.prototype = {
-  countdownGoodies: function(now) {
-    for (var i = 0; i < this.goodies.length; i++) {
-      var goodie = this.goodies[i]
-      goodie.timeLeft -= (this.dt - now) / 100000000000
-    }
+  init: function(world) {
+    document.body.appendChild(this.canvas)
   },
 
-  drawText: function drawText(x, y, size, text) {
-    this.ctx.fillStyle = 'rgb(0,0,0)';
-    this.ctx.font = size + 'px Monospace';
-    this.ctx.textAlign = 'left';
-    this.ctx.textBaseline = 'top';
-    this.ctx.fillText(text, x, y);
+  parseGoodies: function(data) {
+    let goodies = []
+    for (let i in data) {
+      goodies.push(new Goodie(this, data[i]))
+    }
+
+    return goodies
+  },
+
+  parseBoxes: function(data) {
+    let boxes = []
+    for (let i in data) {
+      boxes.push(new Box(this, data[i]))
+    }
+
+    return boxes
+  },
+
+  countdownGoodies: function(now) {
+    for (let i in this.world.goodies) {
+      let goodie = this.world.goodies[i]
+      goodie.countdown(now)
+    }
   },
 
   clearScreen: function() {
@@ -50,24 +60,16 @@ GameCore.prototype = {
   },
 
   drawBoxes: function() {
-    this.ctx.fillStyle = this.pat
-    this.ctx.beginPath()
-    for (var i = 0; i < this.boxes.length; i++) {
-      var box = this.boxes[i]
-      this.ctx.rect(box.position.x, box.position.y, box.size.x, box.size.y)
+    for (let i in this.world.boxes) {
+      let box = this.world.boxes[i]
+      box.draw()
     }
-    this.ctx.fill()
   },
 
-  drawGoodie: function() {
-    for (var i = 0; i < this.goodies.length; i++) {
-      var goodie = this.goodies[i]
-      this.ctx.drawImage(goodie.img, goodie.position.x, goodie.position.y)
-      this.drawText(
-        goodie.position.x + goodie.size.x,
-        goodie.position.y - 10, 10, Math.floor(goodie.timeLeft / 1000 - 2)
-      )
-      this.ctx.drawImage(goodie.img, goodie.position.x, goodie.position.y)
+  drawGoodies: function() {
+    for (let i in this.world.goodies) {
+      let goodie = this.world.goodies[i]
+      goodie.draw()
     }
   },
 
@@ -79,34 +81,24 @@ GameCore.prototype = {
   draw: function(now) {
     this.clearScreen()
     this.drawBoxes()
-    this.drawGoodie()
     this.drawPlayers(now)
+    this.drawGoodies()
     this.countdownGoodies(now)
-  },
-
-  animate: function(now) {
-    if (this.state === 'play') {
-      this.draw(now)
-    }
-    else if (this.state === 'wait') {
-      this.clearScreen()
-      this.drawText(50, this.world.y - 100, 25, 'Waiting for opponent...')
-    }
   },
 
   colCheck: function(shapeA, shapeB) {
     // get the vectors to check against
-    var vX = (shapeA.position.x + (shapeA.size.x / 2)) - (shapeB.position.x + (shapeB.size.x / 2))
-    var vY = (shapeA.position.y + (shapeA.size.y / 2)) - (shapeB.position.y + (shapeB.size.y / 2))
+    let vX = (shapeA.position.x + (shapeA.size.x / 2)) - (shapeB.position.x + (shapeB.size.x / 2))
+    let vY = (shapeA.position.y + (shapeA.size.y / 2)) - (shapeB.position.y + (shapeB.size.y / 2))
     // add the half widths and half heights of the objects
-    var hWidths  = (shapeA.size.x / 2) + (shapeB.size.x / 2)
-    var hHeights = (shapeA.size.y / 2) + (shapeB.size.y / 2)
-    var colDir = null
+    let hWidths  = (shapeA.size.x / 2) + (shapeB.size.x / 2)
+    let hHeights = (shapeA.size.y / 2) + (shapeB.size.y / 2)
+    let colDir = null
 
     // if the x and y vector are less than the half width or half height - collision
     if (Math.abs(vX) < hWidths && Math.abs(vY) < hHeights) {
-      var oX = hWidths - Math.abs(vX)
-      var oY = hHeights - Math.abs(vY)
+      let oX = hWidths - Math.abs(vX)
+      let oY = hHeights - Math.abs(vY)
       if (oX >= oY) {
         // figures out on which side we are colliding (top, bottom, left, or right)
         if (vY > 0) {
@@ -134,34 +126,29 @@ GameCore.prototype = {
 }
 
 function Player(game) {
-  // current instances
-  this.game                = game
+  this.game        = game
+  this.velocity    = { x: 0,  y: 0 }
+  this.size        = { x: 26, y: 40 }
+  this.position    = { x: 0,  y: game.world.y - this.size.y }
+  this.score       = 0
+  this.lastUpdate  = 0
+  this.updateDelta = 0
+  this.color       = '#00FF00'
 
-  this.velocity            = { x: 0,  y: 0 }
-  this.size                = { x: 26, y: 40 }
-  this.position            = { x: 0,  y: this.game.world.y - this.size.y }
-  this.score               = 0
-  this.id                  = null
-  this.lastUpdate          = 0
-  this.updateDelta         = 0
+  this.speed       = 3
+  this.jump        = 8
+  this.stomp       = 15
 
-  // moving variables
-  this.speed               = 3
-  this.jump                = 8
-  this.stomp               = 15
+  this.jumping     = false
+  this.walking     = false
+  this.doubleJump  = false
+  this.grounded    = true
+  this.color       = null
 
-  // states
-  this.jumping             = false
-  this.doubleJump          = false
-  this.grounded            = true
-  this.color               = null
-
-  // player style
-  this.img                 = new Image()
-  this.img.src             = 'assets/images/mario.png'
-  this.frame               = 0
-  this.frameIndex          = 0
-  this.walking             = false
+  this.img         = new Image()
+  this.img.src     = 'assets/images/mario.png'
+  this.frame       = 0
+  this.frameIndex  = 0
 }
 
 Player.prototype = {
@@ -181,9 +168,9 @@ Player.prototype = {
   },
 
   move: function(now) {
-    var delta = (this.game.dt - now) / 1000000000000
+    let delta = (this.game.dt - now) / 1000000000000
 
-    this.velocity.y += this.game.gravity * delta
+    this.velocity.y += this.game.world.gravity * delta
     this.position.y = this.position.y + this.velocity.y * delta
     this.position.x = this.position.x + this.velocity.x * delta
   },
@@ -192,57 +179,54 @@ Player.prototype = {
     this.move(now)
     this.collide()
     this.enforceBoundingBox()
-    this.game.drawText(this.position.x + this.size.x, this.position.y - 10, 11, 'Score: ' + this.score)
 
-    if (this.jumping) {
-      this.frame = 3 + this.frameIndex
-    }
-    else if (this.walking) {
-      var delta = Date.now() - this.lastUpdate
-      if (this.updateDelta > 100) {
-        this.updateDelta = 0
-        if (this.frame - this.frameIndex < 2 && this.game.dt >= 3) {
-          if (this.frameIndex === 4) {
-            this.frame = 5
-          }
-          this.frame++
-        }
-        else {
-          this.frame = this.frameIndex
-        }
-      }
-      else {
-        this.updateDelta += delta
-      }
-    }
-    else if (this.grounded) {
-      this.frame = this.frameIndex
-    }
+    // if (this.jumping) {
+    //   this.frame = 3 + this.frameIndex
+    // }
+    // else if (this.walking) {
+    //   let delta = Date.now() - this.lastUpdate
+    //   if (this.updateDelta > 100) {
+    //     this.updateDelta = 0
+    //     if (this.frame - this.frameIndex < 2 && this.game.dt >= 3) {
+    //       if (this.frameIndex === 4) {
+    //         this.frame = 5
+    //       }
+    //       this.frame++
+    //     }
+    //     else {
+    //       this.frame = this.frameIndex
+    //     }
+    //   }
+    //   else {
+    //     this.updateDelta += delta
+    //   }
+    // }
+    // else if (this.grounded) {
+    //   this.frame = this.frameIndex
+    // }
     this.lastUpdate = Date.now()
 
-    this.game.ctx.save()
-    if (this.dir === -1) {
-      this.game.ctx.translate(-this.img.width, 0)
-        this.game.ctx.scale(this.dir, 1)
-    }
-    this.game.ctx.drawImage(
-      this.img,
-      this.frame * this.size.x,
-      0,
-      this.size.x,
-      this.size.y,
-      this.position.x,
-      this.position.y,
-      this.size.x,
-      this.size.y
-    )
-    this.game.ctx.restore()
+    // this.game.ctx.drawImage(
+    //   this.img,
+    //   this.frame * this.size.x,
+    //   0,
+    //   this.size.x,
+    //   this.size.y,
+    //   this.position.x,
+    //   this.position.y,
+    //   this.size.x,
+    //   this.size.y
+    // )
+    this.game.ctx.beginPath()
+    this.game.ctx.fillStyle = this.color
+    this.game.ctx.fillRect(this.position.x, this.position.y, this.size.x, this.size.y)
+    this.game.ctx.closePath()
   },
 
   collide: function() {
     this.grounded = false
-    for (var i = 0; i < this.game.boxes.length; i++) {
-      var dir = this.game.colCheck(this, this.game.boxes[i])
+    for (let i in this.game.world.boxes) {
+      let dir = this.game.colCheck(this, this.game.world.boxes[i])
       if (dir === 'l' || dir === 'r') {
         this.velocity.x = 0
         this.jumping = false
@@ -252,7 +236,7 @@ Player.prototype = {
         this.jumping = false
         this.dblJump = false
       } else if (dir === 't') {
-        this.velocity.y = this.game.gravity * 2
+        this.velocity.y = this.game.world.gravity * 2
       }
     }
     if (this.grounded) {
@@ -267,33 +251,73 @@ Player.prototype = {
     else if (this.position.x < 0) {
       this.position.x = 0
     }
-    if (this.position.y + this.size.y + 12 > this.game.world.y) {
-      this.position.y = this.game.world.y - this.size.y - 12
+    if (this.position.y + this.size.y > this.game.world.y) {
+      this.position.y = this.game.world.y - this.size.y
       this.velocity.y = 0
       this.jumping = false
       this.grounded = true
       this.dblJump = false
     }
     else if (this.position.y < 0) {
-      this.velocity.y = this.game.gravity * 2
+      this.velocity.y = this.game.world.gravity * 2
     }
   },
 
   collectGoodie: function() {
-    for (var i = 0; i < this.game.goodies.length; i++) {
-      var goodie = this.game.goodies[i]
+    for (let i in this.game.world.goodies) {
+      let goodie = this.game.world.goodies[i]
       if (this.game.colCheck(this, goodie)) {
-        this.game.goodies.length = 0
-        this.game.socket.emit('scored')
+        this.score++
+        window.socket.emit('scored')
       }
     }
   }
 }
 
-function Goodie(position) {
+function Goodie(game, data) {
+  this.game     = game
+  this.color    = '#FF0000'
+  this.position = data.position
   this.size     = { x: 10, y: 10 }
-  this.img      = new Image()
-  this.img.src  = 'assets/images/star.png'
-  this.position = position
-  this.timeLeft = position.timeLeft
+  this.timeLeft = 15 * 1000 // 15 sec
+}
+
+Goodie.prototype = {
+  draw: function() {
+    this.game.ctx.beginPath()
+    this.game.ctx.fillStyle = this.color
+    this.game.ctx.fillRect(this.position.x, this.position.y, this.size.x, this.size.y)
+    this.game.ctx.font = '10px Monospace';
+    this.game.ctx.textAlign = 'left';
+    this.game.ctx.textBaseline = 'top';
+    this.game.ctx.fillText(
+        Math.floor(this.timeLeft / 1000),
+        this.position.x + 10,
+        this.position.y - 10
+    )
+    this.game.ctx.closePath()
+  },
+
+  countdown: function(now) {
+    if (Math.floor(this.timeLeft / 1000 <= 0)) {
+      window.socket.emit('resetGoodies')
+    }
+    this.timeLeft -= (this.game.dt - now) / 100000000000
+  }
+}
+
+function Box(game, data) {
+  this.game     = game
+  this.color    = '#000000'
+  this.position = data.position
+  this.size     = data.size
+}
+
+Box.prototype = {
+  draw: function() {
+    this.game.ctx.beginPath()
+    this.game.ctx.fillStyle = this.color
+    this.game.ctx.fillRect(this.position.x, this.position.y, this.size.x, this.size.y)
+    this.game.ctx.closePath()
+  }
 }
