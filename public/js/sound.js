@@ -1,11 +1,13 @@
 $(function() {
   'use strict'
 
-  if (!createjs.Sound.initializeDefaultPlugins()) return
+  if (!createjs.Sound.initializeDefaultPlugins()) {
+    return
+  }
 
-  var mute   = true
-  var path   = 'assets/sounds/'
-  var sounds = [
+  let mute   = true
+  let path   = 'assets/sounds/'
+  let sounds = [
     { id: 'background', src: 'background.ogg' },
   ]
 

@@ -1,6 +1,6 @@
 'use strict'
 
-let gameport  = 3000
+let gameport  = parseInt(process.argv[2], 10) || 3000
 let io        = require('socket.io')
 let express   = require('express')
 let http      = require('http')
@@ -20,24 +20,54 @@ sio.sockets.on('connection', function(client) {
   console.log('\tsocket.io::\tclient ' + client.id + ' connected')
 
   // join the lobby
-  client.join('lobby')
+  client.on('joinLobby', function(name) {
+    client.name = name
+    client.join('lobby')
+  })
 
-  let idleClients = sio.sockets.adapter.rooms.lobby
-  if (Object.keys(idleClients).length === 2) {
-    let game = gameServer.createGame()
+  function checkForLobbies() {
+    let idleClients = sio.sockets.adapter.rooms.lobby
 
-    for (let clientID in idleClients) {
-      let c = sio.sockets.connected[clientID]
-      c.leave('lobby')
-      c.gameID = game.addClient(c)
-      c.score = 0
+    if (typeof idleClients !== 'undefined' && Object.keys(idleClients).length === 2) {
+      let game = gameServer.createGame()
+      let players = []
+      let colors = ['#FF0000', '#0000FF']
+      let i = 0
+
+      for (let clientID in idleClients) {
+        let c = sio.sockets.connected[clientID]
+        game.addClient(c)
+
+        players.push({
+          id: c.id,
+          name: c.name,
+          color: colors[i]
+        })
+        i++
+      }
+
+      sio.sockets.in(game.id).emit('joinedGame', {
+        world:   game.world,
+        id:      game.id,
+        players: players
+      })
+
+      setInterval(function() {
+        for (let i in game.world.goodies) {
+          let goodie = game.world.goodies[i]
+          if (goodie.timeLeft === 0) {
+            game.resetGoodies()
+          }
+          else {
+            goodie.timeLeft -= 1000
+          }
+          sio.sockets.in(game.id).emit('updateGoodies', game.world.goodies)
+        }
+      }, 1000)
     }
-
-    sio.sockets.in(game.id).emit('joinedGame', {
-      'world': game.world,
-      'id':    game.id
-    })
   }
+
+  setInterval(checkForLobbies, 5 * 1000) // check for lobbies all 5 seconds
 
   client.on('sendPosition', function(data) {
     client.broadcast.to(client.gameID).emit('updatePosition', data)
@@ -50,16 +80,10 @@ sio.sockets.on('connection', function(client) {
     sio.sockets.in(client.gameID).emit('updateGoodies', data.goodies)
   })
 
-  client.on('resetGoodies', function() {
-    let game = gameServer.games[client.gameID]
-    let data = game.resetGoodies()
-    sio.sockets.in(client.gameID).emit('updateGoodies', data)
-  })
-
   client.on('disconnect', function() {
     if (client.gameID) {
       let game = gameServer.games[client.gameID]
-      sio.sockets.in(client.gameID).emit('playerLeft')
+      client.broadcast.to(client.gameID).emit('playerLeft')
       gameServer.quitGame(game)
     }
     console.log('\tsocket.io::\tclient ' + client.id + ' disconnected')

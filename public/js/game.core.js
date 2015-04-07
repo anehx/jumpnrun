@@ -48,13 +48,6 @@ GameCore.prototype = {
     return boxes
   },
 
-  countdownGoodies: function(now) {
-    for (let i in this.world.goodies) {
-      let goodie = this.world.goodies[i]
-      goodie.countdown(now)
-    }
-  },
-
   clearScreen: function() {
     this.ctx.clearRect(0, 0, this.world.x, this.world.y)
   },
@@ -83,7 +76,7 @@ GameCore.prototype = {
     this.drawBoxes()
     this.drawPlayers(now)
     this.drawGoodies()
-    this.countdownGoodies(now)
+    this.drawScores()
   },
 
   colCheck: function(shapeA, shapeB) {
@@ -122,7 +115,54 @@ GameCore.prototype = {
       }
     }
     return colDir
-  }
+  },
+
+  drawScores: function() {
+    this.ctx.beginPath()
+    this.ctx.moveTo(0, 0)
+    this.ctx.lineTo(0, 50)
+    this.ctx.lineTo(150, 50)
+    this.ctx.lineTo(200, 0)
+    this.ctx.lineTo(0, 0)
+    this.ctx.moveTo(this.world.x, 0)
+    this.ctx.lineTo(this.world.x, 50)
+    this.ctx.lineTo(this.world.x - 150, 50)
+    this.ctx.lineTo(this.world.x - 200, 0)
+    this.ctx.lineTo(this.world.x, 0)
+    this.ctx.fillStyle = '#000000'
+    this.ctx.globalAlpha = 0.7
+    this.ctx.fill()
+    this.ctx.globalAlpha = 1
+    this.ctx.closePath()
+
+    this.ctx.beginPath()
+    this.ctx.moveTo(0, 50)
+    this.ctx.lineTo(150, 50)
+    this.ctx.lineTo(200, 0)
+    this.ctx.strokeStyle = this.players.self.color
+    this.ctx.stroke()
+    this.ctx.closePath()
+
+    this.ctx.beginPath()
+    this.ctx.moveTo(this.world.x, 50)
+    this.ctx.lineTo(this.world.x - 150, 50)
+    this.ctx.lineTo(this.world.x - 200, 0)
+    this.ctx.strokeStyle = this.players.other.color
+    this.ctx.stroke()
+    this.ctx.closePath()
+
+    this.ctx.fillStyle = this.players.self.color
+    this.ctx.textAlign = 'left'
+    this.ctx.font = '12px Monospace'
+    this.ctx.fillText(this.players.self.name, 10, 15)
+    this.ctx.fillText('Score: ' + this.players.self.score, 10, 28)
+
+    this.ctx.fillStyle = this.players.other.color
+    this.ctx.textAlign = 'right'
+    this.ctx.font = '12px Monospace'
+    this.ctx.fillText(this.players.other.name, this.world.x - 10, 15)
+    this.ctx.fillText('Score: ' + this.players.other.score, this.world.x - 10, 28)
+  },
 }
 
 function Player(game) {
@@ -133,7 +173,8 @@ function Player(game) {
   this.score       = 0
   this.lastUpdate  = 0
   this.updateDelta = 0
-  this.color       = '#00FF00'
+  this.color       = null
+  this.name        = null
 
   this.speed       = 3
   this.jump        = 8
@@ -143,7 +184,6 @@ function Player(game) {
   this.walking     = false
   this.doubleJump  = false
   this.grounded    = true
-  this.color       = null
 
   this.img         = new Image()
   this.img.src     = 'assets/images/mario.png'
@@ -279,7 +319,7 @@ function Goodie(game, data) {
   this.color    = '#FF0000'
   this.position = data.position
   this.size     = { x: 10, y: 10 }
-  this.timeLeft = 15 * 1000 // 15 sec
+  this.timeLeft = data.timeLeft
 }
 
 Goodie.prototype = {
@@ -291,19 +331,12 @@ Goodie.prototype = {
     this.game.ctx.textAlign = 'left';
     this.game.ctx.textBaseline = 'top';
     this.game.ctx.fillText(
-        Math.floor(this.timeLeft / 1000),
+        Math.round(this.timeLeft / 1000),
         this.position.x + 10,
         this.position.y - 10
     )
     this.game.ctx.closePath()
   },
-
-  countdown: function(now) {
-    if (Math.floor(this.timeLeft / 1000 <= 0)) {
-      window.socket.emit('resetGoodies')
-    }
-    this.timeLeft -= (this.game.dt - now) / 100000000000
-  }
 }
 
 function Box(game, data) {

@@ -8,6 +8,13 @@ $(function() {
 
   window.socket = io.connect(OPTIONS.SERVER)
 
+  let defaultName = 'Player-' + Math.round(Math.random() * 1000000)
+  let name = prompt('Please enter your nickname', defaultName)
+  if (name === null) {
+    name = defaultName
+  }
+  socket.emit('joinLobby', name)
+
   function animate(now) {
     if (typeof gameCore !== 'undefined') {
       gameCore.players.self.walk(keys)
@@ -18,7 +25,23 @@ $(function() {
   }
 
   socket.on('joinedGame', function(data) {
-    window.gameCore = new GameCore({ 'world': data.world, id: data.id })
+    window.gameCore = new GameCore({
+      world:   data.world,
+      id:      data.id
+    })
+    for (let i in data.players) {
+      let player = data.players[i]
+
+      if (player.id === socket.id) {
+        gameCore.players.self.name = player.name
+        gameCore.players.self.color = player.color
+      }
+      else {
+        gameCore.players.other.name = player.name
+        gameCore.players.other.color = player.color
+      }
+    }
+
     gameCore.init()
     requestNextAnimationFrame(animate)
   })
@@ -42,7 +65,7 @@ $(function() {
   })
 
   socket.on('updateScore', function(data) {
-    gameCore.players.other.score = data.score
+    gameCore.players.other.score = data
   })
 
   socket.on('updateGoodies', function(data) {
@@ -52,6 +75,8 @@ $(function() {
   socket.on('playerLeft', function() {
     $('#game').remove()
     gameCore = undefined
+    console.log(socket.name)
+    socket.emit('joinLobby', name)
   })
 
   setInterval(sendPos, 1000 / OPTIONS.FPS)
