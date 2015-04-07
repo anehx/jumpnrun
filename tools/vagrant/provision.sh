@@ -12,7 +12,6 @@ curl -sL https://deb.nodesource.com/setup | bash -
 apt-get install -y nodejs
 
 # install jumpnrun
-npm install nodemon -g
 cd /vagrant && su vagrant -c "make install"
 
 # configure nginx

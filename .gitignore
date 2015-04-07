@@ -1,4 +1,7 @@
 .vagrant
 node_modules
+bower_components
+tmp
+frontend/dist
 *.swp
 *.swo

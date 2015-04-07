@@ -4,14 +4,16 @@ let gameport  = parseInt(process.env.SERVER_PORT, 10) || 3000
 let io        = require('socket.io')
 let express   = require('express')
 let http      = require('http')
+let morgan    = require('morgan')
 let app       = express()
 let server    = http.createServer(app)
 
 server.listen(gameport)
+app.use(morgan('dev'))
 console.log('\texpress::\tserver listening on port ' + gameport + '\n')
 
 /* Socket.IO server set up. */
-let gameServer = require('./lib/models/server.js')
+let gameServer = require('./models/server.js')
 let sio = io.listen(server)
 
 sio.sockets.on('connection', function(client) {
@@ -31,7 +33,7 @@ sio.sockets.on('connection', function(client) {
     if (typeof idleClients !== 'undefined' && Object.keys(idleClients).length === 2) {
       let game = gameServer.createGame()
       let players = []
-      let colors = ['#FF0000', '#0000FF']
+      let colors = [ '#FF0000', '#0000FF' ]
       let i = 0
 
       for (let clientID in idleClients) {

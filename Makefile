@@ -1,9 +1,13 @@
 install:
 	@npm install
 
-run:
-	@vagrant ssh -c "cd /vagrant; nodemon --harmony app.js"
+run: build-frontend
+	@vagrant ssh -c "cd /vagrant; node_modules/.bin/babel-node backend/app.js"
 
 vagrant:
 	@vagrant plugin install vagrant-hostsupdater
 	@vagrant up
+
+build-frontend:
+	@rm -r frontend/dist
+	@broccoli build frontend/dist
