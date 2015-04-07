@@ -14,7 +14,6 @@ Then navigate to http://jumpnrun.vm in your browser to play.
 
 ## Requirements
 * nodejs
-* express
-* morgan
-* node-uuid
-* socket.io
+* broccoli
+
+install with `npm install --global [package]`
