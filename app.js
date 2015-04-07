@@ -1,6 +1,6 @@
 'use strict'
 
-let gameport  = parseInt(process.argv[2], 10) || 3000
+let gameport  = parseInt(process.env.SERVER_PORT, 10) || 3000
 let io        = require('socket.io')
 let express   = require('express')
 let http      = require('http')
