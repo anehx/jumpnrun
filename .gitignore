@@ -1,7 +1,7 @@
 .vagrant
 node_modules
-bower_components
-tmp
+frontend/bower_components
+frontend/tmp
 frontend/dist
 *.swp
 *.swo

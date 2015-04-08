@@ -14,6 +14,7 @@ Then navigate to http://jumpnrun.vm in your browser to play.
 
 ## Requirements
 * nodejs
-* broccoli
+* broccoli-cli
+* bower
 
-install with `npm install --global [package]`
+install with `npm install -g [package]`

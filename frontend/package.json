@@ -1,0 +1,16 @@
+{
+  "name": "jumpnrun",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "broccoli serve"
+  },
+  "devDependencies": {
+    "broccoli": "^0.15.3",
+    "broccoli-babel-transpiler": "^5.0.0",
+    "broccoli-concat": "0.0.13",
+    "broccoli-funnel": "^0.2.3",
+    "broccoli-merge-trees": "^0.2.1",
+    "broccoli-uglify-js": "^0.1.3"
+  }
+}
