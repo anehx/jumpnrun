@@ -6,11 +6,11 @@ function GameCore(options) {
   this.dt            = new Date().getTime()
 
   this.world         = {
-    gravity: 0.3,
-    x: options.world.x,
-    y: options.world.y,
-    boxes:   this.parseBoxes(options.world.boxes),
-    goodies: this.parseGoodies(options.world.goodies)
+    gravity: 0.3
+  , x: options.world.x
+  , y: options.world.y
+  , boxes:   this.parseBoxes(options.world.boxes)
+  , goodies: this.parseGoodies(options.world.goodies)
   }
 
   this.canvas        = document.createElement('canvas')
@@ -20,66 +20,66 @@ function GameCore(options) {
   this.ctx           = this.canvas.getContext('2d')
 
   this.players       = {
-    self:  new Player(this),
-    other: new Player(this)
+    self:  new Player(this)
+  , other: new Player(this)
   }
 }
 
 GameCore.prototype = {
   init: function(world) {
     document.body.appendChild(this.canvas)
-  },
+  }
 
-  parseGoodies: function(data) {
+, parseGoodies: function(data) {
     let goodies = []
     for (let i in data) {
       goodies.push(new Goodie(this, data[i]))
     }
 
     return goodies
-  },
+  }
 
-  parseBoxes: function(data) {
+, parseBoxes: function(data) {
     let boxes = []
     for (let i in data) {
       boxes.push(new Box(this, data[i]))
     }
 
     return boxes
-  },
+  }
 
-  clearScreen: function() {
+, clearScreen: function() {
     this.ctx.clearRect(0, 0, this.world.x, this.world.y)
-  },
+  }
 
-  drawBoxes: function() {
+, drawBoxes: function() {
     for (let i in this.world.boxes) {
       let box = this.world.boxes[i]
       box.draw()
     }
-  },
+  }
 
-  drawGoodies: function() {
+, drawGoodies: function() {
     for (let i in this.world.goodies) {
       let goodie = this.world.goodies[i]
       goodie.draw()
     }
-  },
+  }
 
-  drawPlayers: function(now) {
+, drawPlayers: function(now) {
     this.players.self.draw(now)
     this.players.other.draw(now)
-  },
+  }
 
-  draw: function(now) {
+, draw: function(now) {
     this.clearScreen()
     this.drawBoxes()
     this.drawPlayers(now)
     this.drawGoodies()
     this.drawScores()
-  },
+  }
 
-  colCheck: function(shapeA, shapeB) {
+, colCheck: function(shapeA, shapeB) {
     // get the vectors to check against
     let vX = (shapeA.position.x + (shapeA.size.x / 2)) - (shapeB.position.x + (shapeB.size.x / 2))
     let vY = (shapeA.position.y + (shapeA.size.y / 2)) - (shapeB.position.y + (shapeB.size.y / 2))
@@ -115,9 +115,9 @@ GameCore.prototype = {
       }
     }
     return colDir
-  },
+  }
 
-  drawScores: function() {
+, drawScores: function() {
     this.ctx.beginPath()
     this.ctx.moveTo(0, 0)
     this.ctx.lineTo(0, 50)
@@ -162,7 +162,7 @@ GameCore.prototype = {
     this.ctx.font = '12px Monospace'
     this.ctx.fillText(this.players.other.name, this.world.x - 10, 15)
     this.ctx.fillText('Score: ' + this.players.other.score, this.world.x - 10, 28)
-  },
+  }
 }
 
 function Player(game) {
@@ -205,65 +205,28 @@ Player.prototype = {
       this.walking = true
       this.frameIndex = 0
     }
-  },
+  }
 
-  move: function(now) {
+, move: function(now) {
     let delta = (this.game.dt - now) / 1000000000000
 
     this.velocity.y += this.game.world.gravity * delta
     this.position.y = this.position.y + this.velocity.y * delta
     this.position.x = this.position.x + this.velocity.x * delta
-  },
+  }
 
-  draw: function(now) {
+, draw: function(now) {
     this.move(now)
     this.collide()
     this.enforceBoundingBox()
-
-    // if (this.jumping) {
-    //   this.frame = 3 + this.frameIndex
-    // }
-    // else if (this.walking) {
-    //   let delta = Date.now() - this.lastUpdate
-    //   if (this.updateDelta > 100) {
-    //     this.updateDelta = 0
-    //     if (this.frame - this.frameIndex < 2 && this.game.dt >= 3) {
-    //       if (this.frameIndex === 4) {
-    //         this.frame = 5
-    //       }
-    //       this.frame++
-    //     }
-    //     else {
-    //       this.frame = this.frameIndex
-    //     }
-    //   }
-    //   else {
-    //     this.updateDelta += delta
-    //   }
-    // }
-    // else if (this.grounded) {
-    //   this.frame = this.frameIndex
-    // }
     this.lastUpdate = Date.now()
-
-    // this.game.ctx.drawImage(
-    //   this.img,
-    //   this.frame * this.size.x,
-    //   0,
-    //   this.size.x,
-    //   this.size.y,
-    //   this.position.x,
-    //   this.position.y,
-    //   this.size.x,
-    //   this.size.y
-    // )
     this.game.ctx.beginPath()
     this.game.ctx.fillStyle = this.color
     this.game.ctx.fillRect(this.position.x, this.position.y, this.size.x, this.size.y)
     this.game.ctx.closePath()
-  },
+  }
 
-  collide: function() {
+, collide: function() {
     this.grounded = false
     for (let i in this.game.world.boxes) {
       let dir = this.game.colCheck(this, this.game.world.boxes[i])
@@ -282,9 +245,9 @@ Player.prototype = {
     if (this.grounded) {
       this.velocity.y = 0
     }
-  },
+  }
 
-  enforceBoundingBox: function() {
+, enforceBoundingBox: function() {
     if (this.position.x + this.size.x > this.game.world.x) {
       this.position.x = this.game.world.x - this.size.x
     }
@@ -301,9 +264,9 @@ Player.prototype = {
     else if (this.position.y < 0) {
       this.velocity.y = this.game.world.gravity * 2
     }
-  },
+  }
 
-  collectGoodie: function() {
+, collectGoodie: function() {
     for (let i in this.game.world.goodies) {
       let goodie = this.game.world.goodies[i]
       if (this.game.colCheck(this, goodie)) {
@@ -331,12 +294,12 @@ Goodie.prototype = {
     this.game.ctx.textAlign = 'left';
     this.game.ctx.textBaseline = 'top';
     this.game.ctx.fillText(
-        Math.round(this.timeLeft / 1000),
-        this.position.x + 10,
-        this.position.y - 10
+      Math.round(this.timeLeft / 1000)
+    , this.position.x + 10
+    , this.position.y - 10
     )
     this.game.ctx.closePath()
-  },
+  }
 }
 
 function Box(game, data) {

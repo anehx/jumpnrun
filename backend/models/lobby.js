@@ -7,8 +7,8 @@ let Lobby = module.exports = function() {
   this.players       = {}
 
   this.world         = {
-    x: 1000,
-    y: 500
+    x: 1000
+  , y: 500
   }
 
   this.world.boxes   = this.generateBoxes(30)
@@ -25,59 +25,59 @@ Lobby.prototype = {
     client.join(this.id)
 
     console.log('\tlobby.js::\tclient ' + client.id + ' joined game ' + this.id)
-  },
+  }
 
-  removeClient: function(client) {
+, removeClient: function(client) {
     client.gameID           = null
     this.players[client.id] = undefined
 
     client.leave(this.id)
 
     console.log('\tlobby.js::\tclient ' + client.id + ' left game ' + this.id)
-  },
+  }
 
-  generateBoxes: function(count) {
+, generateBoxes: function(count) {
     let boxes = []
     for (let i = 0; i < count; i++) {
       boxes.push({
         position: {
-          x: Math.floor(Math.random() * this.world.x),
-          y: Math.floor(Math.random() * 7 + 1) * this.world.y / 6
-        },
-        size: {
-          x: Math.floor(Math.random() * 150) + 40,
-          y: 16
+          x: Math.floor(Math.random() * this.world.x)
+        , y: Math.floor(Math.random() * 7 + 1) * this.world.y / 6
+        }
+      , size: {
+          x: Math.floor(Math.random() * 150) + 40
+        , y: 16
         }
       })
     }
     return boxes
-  },
+  }
 
-  score: function(client) {
+, score: function(client) {
     client.score++
     this.resetGoodies()
 
     let data = {
-      score:   client.score,
-      goodies: this.world.goodies
+      score:   client.score
+    , goodies: this.world.goodies
     }
 
     return data
-  },
+  }
 
-  resetGoodies: function() {
+, resetGoodies: function() {
     this.world.goodies = this.generateGoodies(1)
-  },
+  }
 
-  generateGoodies: function(count) {
+, generateGoodies: function(count) {
     let goodies = []
     for (let i = 0; i < count; i++) {
       goodies.push({
         position: {
-          x: Math.floor(Math.random() * this.world.x),
-          y: Math.floor(Math.random() * 5 + 1) * this.world.y / 6 - 25,
-        },
-        timeLeft: 15 * 1000
+          x: Math.floor(Math.random() * this.world.x)
+        , y: Math.floor(Math.random() * 5 + 1) * this.world.y / 6 - 25
+        }
+      , timeLeft: 15 * 1000
       })
     }
     return goodies

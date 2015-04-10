@@ -2,17 +2,14 @@ $(function() {
   'use strict'
 
   const OPTIONS = {
-    'FPS':    60,
-    'SERVER': 'http://jumpnrun.vm:3000'
+    FPS:    60
+  , SERVER: 'http://jumpnrun.vm:3000'
   }
 
   window.socket = io.connect(OPTIONS.SERVER)
 
   let defaultName = 'Player-' + Math.round(Math.random() * 1000000)
-  let name = prompt('Please enter your nickname', defaultName)
-  if (name === null) {
-    name = defaultName
-  }
+  let name = prompt('Please enter your nickname', defaultName) || defaultName
   socket.emit('joinLobby', name)
 
   function animate(now) {
@@ -26,8 +23,8 @@ $(function() {
 
   socket.on('joinedGame', function(data) {
     window.gameCore = new GameCore({
-      world:   data.world,
-      id:      data.id
+      world:   data.world
+    , id:      data.id
     })
     for (let i in data.players) {
       let player = data.players[i]
@@ -49,10 +46,10 @@ $(function() {
   function sendPos() {
     if (typeof gameCore !== 'undefined') {
       socket.emit('sendPosition', {
-        position: gameCore.players.self.position,
-        walking: gameCore.players.self.walking,
-        jumping: gameCore.players.self.jumping,
-        frameIndex: gameCore.players.self.frameIndex
+        position: gameCore.players.self.position
+      , walking: gameCore.players.self.walking
+      , jumping: gameCore.players.self.jumping
+      , frameIndex: gameCore.players.self.frameIndex
       })
     }
   }

@@ -8,12 +8,12 @@ var uglify       = require('broccoli-uglify-js')
 var compileLess  = require('broccoli-less-single')
 var cleanCss     = require('broccoli-clean-css')
 
-var appJsTree   = funnel('js')
-var appLessTree = funnel('less')
-var vendorTree  = funnel('bower_components')
+var appJsTree    = funnel('js')
+var appLessTree  = funnel('less')
+var vendorTree   = funnel('bower_components')
 
-var appCss    = cleanCss(compileLess(appLessTree, 'app.less', 'app.css'))
-var vendorCss = cleanCss(compileLess(vendorTree, 'bootstrap/less/bootstrap.less', 'vendor.css'))
+var appCss       = cleanCss(compileLess(appLessTree, 'app.less', 'app.css'))
+var vendorCss    = cleanCss(compileLess(vendorTree, 'bootstrap/less/bootstrap.less', 'vendor.css'))
 
 var vendorJs = uglify(
   concat(
@@ -34,6 +34,13 @@ var vendorJs = uglify(
   }
 )
 
-var appJs = esTranspiler(appJsTree, {})
+var appJs = uglify(
+  concat(
+    esTranspiler(appJsTree, {})
+  , {
+      inputFiles: [ '*.js' ]
+    , outputFile: '/app.js' }
+  )
+)
 
 module.exports = mergeTrees([ appCss, appJs, vendorJs, vendorCss ])

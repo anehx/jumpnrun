@@ -41,17 +41,17 @@ sio.sockets.on('connection', function(client) {
         game.addClient(c)
 
         players.push({
-          id: c.id,
-          name: c.name,
-          color: colors[i]
+          id: c.id
+        , name: c.name
+        , color: colors[i]
         })
         i++
       }
 
       sio.sockets.in(game.id).emit('joinedGame', {
-        world:   game.world,
-        id:      game.id,
-        players: players
+        world:   game.world
+      , id:      game.id
+      , players: players
       })
 
       setInterval(function() {

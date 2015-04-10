@@ -8,7 +8,7 @@ $(function() {
   let mute   = true
   let path   = 'assets/sounds/'
   let sounds = [
-    { id: 'background', src: 'background.ogg' },
+    { id: 'background', src: 'background.ogg' }
   ]
 
   createjs.Sound.alternateExtensions = [ 'mp3' ]
