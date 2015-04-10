@@ -1,91 +1,77 @@
-/* jshint browser:true */
-'use strict'
+class GameCore {
+  constructor(options) {
+    this.id            = options.id
+    this.dt            = new Date().getTime()
 
-function GameCore(options) {
-  this.id            = options.id
-  this.dt            = new Date().getTime()
+    this.world         = {
+      gravity: 0.3
+    , x: options.world.x
+    , y: options.world.y
+    , boxes:   this.parseBoxes(options.world.boxes)
+    , goodies: this.parseGoodies(options.world.goodies)
+    }
 
-  this.world         = {
-    gravity: 0.3
-  , x: options.world.x
-  , y: options.world.y
-  , boxes:   this.parseBoxes(options.world.boxes)
-  , goodies: this.parseGoodies(options.world.goodies)
+    this.canvas        = document.createElement('canvas')
+
+    this.canvas.id     = 'game'
+    this.canvas.width  = this.world.x
+    this.canvas.height = this.world.y
+    this.stage         = new createjs.Stage(this.canvas)
+
+    this.players       = {
+      self:  new Player(this)
+    , other: new Player(this)
+    }
+
   }
 
-  this.canvas        = document.createElement('canvas')
-  this.canvas.id     = 'game'
-  this.canvas.width  = this.world.x
-  this.canvas.height = this.world.y
-  this.ctx           = this.canvas.getContext('2d')
-
-  this.players       = {
-    self:  new Player(this)
-  , other: new Player(this)
-  }
-}
-
-GameCore.prototype = {
-  init: function(world) {
+  init() {
     document.body.appendChild(this.canvas)
+    this.world.boxes.map(box => box.addToStage())
+    this.world.goodies.map(goodie => goodie.addToStage())
   }
 
-, parseGoodies: function(data) {
-    let goodies = []
-    for (let i in data) {
-      goodies.push(new Goodie(this, data[i]))
-    }
-
-    return goodies
+  parseGoodies(data) {
+    return data.map(i => new Goodie(this, i))
   }
 
-, parseBoxes: function(data) {
-    let boxes = []
-    for (let i in data) {
-      boxes.push(new Box(this, data[i]))
-    }
-
-    return boxes
+  parseBoxes(data) {
+    return data.map(i => new Box(this, i))
   }
 
-, clearScreen: function() {
-    this.ctx.clearRect(0, 0, this.world.x, this.world.y)
-  }
-
-, drawBoxes: function() {
-    for (let i in this.world.boxes) {
-      let box = this.world.boxes[i]
-      box.draw()
+  drawBoxes() {
+    for (let box of this.world.boxes) {
+      box.addToStage()
     }
   }
 
-, drawGoodies: function() {
-    for (let i in this.world.goodies) {
-      let goodie = this.world.goodies[i]
+  drawGoodies() {
+    for (let goodie of this.world.goodies) {
       goodie.draw()
     }
   }
 
-, drawPlayers: function(now) {
-    this.players.self.draw(now)
-    this.players.other.draw(now)
+  drawPlayers() {
+    this.players.self.draw()
+    this.players.other.draw()
   }
 
-, draw: function(now) {
-    this.clearScreen()
-    this.drawBoxes()
-    this.drawPlayers(now)
-    this.drawGoodies()
-    this.drawScores()
+  draw(now) {
+    // this.stage.removeAllChildren()
+    // this.drawBoxes()
+    // this.drawPlayers()
+    // this.drawGoodies()
+    // this.drawScores()
+    this.stage.update()
   }
 
-, colCheck: function(shapeA, shapeB) {
+  colCheck(shapeA, shapeB) {
     // get the vectors to check against
-    let vX = (shapeA.position.x + (shapeA.size.x / 2)) - (shapeB.position.x + (shapeB.size.x / 2))
-    let vY = (shapeA.position.y + (shapeA.size.y / 2)) - (shapeB.position.y + (shapeB.size.y / 2))
+    let vX = (shapeA.position.x + shapeA.size.x / 2) - (shapeB.position.x + shapeB.size.x / 2)
+    let vY = (shapeA.position.y + shapeA.size.y / 2) - (shapeB.position.y + shapeB.size.y / 2)
     // add the half widths and half heights of the objects
-    let hWidths  = (shapeA.size.x / 2) + (shapeB.size.x / 2)
-    let hHeights = (shapeA.size.y / 2) + (shapeB.size.y / 2)
+    let hWidths  = shapeA.size.x / 2 + shapeB.size.x / 2
+    let hHeights = shapeA.size.y / 2 + shapeB.size.y / 2
     let colDir = null
 
     // if the x and y vector are less than the half width or half height - collision
@@ -117,97 +103,85 @@ GameCore.prototype = {
     return colDir
   }
 
-, drawScores: function() {
-    this.ctx.beginPath()
-    this.ctx.moveTo(0, 0)
-    this.ctx.lineTo(0, 50)
-    this.ctx.lineTo(150, 50)
-    this.ctx.lineTo(200, 0)
-    this.ctx.lineTo(0, 0)
-    this.ctx.moveTo(this.world.x, 0)
-    this.ctx.lineTo(this.world.x, 50)
-    this.ctx.lineTo(this.world.x - 150, 50)
-    this.ctx.lineTo(this.world.x - 200, 0)
-    this.ctx.lineTo(this.world.x, 0)
-    this.ctx.fillStyle = '#000000'
-    this.ctx.globalAlpha = 0.7
-    this.ctx.fill()
-    this.ctx.globalAlpha = 1
-    this.ctx.closePath()
-
-    this.ctx.beginPath()
-    this.ctx.moveTo(0, 50)
-    this.ctx.lineTo(150, 50)
-    this.ctx.lineTo(200, 0)
-    this.ctx.strokeStyle = this.players.self.color
-    this.ctx.stroke()
-    this.ctx.closePath()
-
-    this.ctx.beginPath()
-    this.ctx.moveTo(this.world.x, 50)
-    this.ctx.lineTo(this.world.x - 150, 50)
-    this.ctx.lineTo(this.world.x - 200, 0)
-    this.ctx.strokeStyle = this.players.other.color
-    this.ctx.stroke()
-    this.ctx.closePath()
-
-    this.ctx.fillStyle = this.players.self.color
-    this.ctx.textAlign = 'left'
-    this.ctx.font = '12px Monospace'
-    this.ctx.fillText(this.players.self.name, 10, 15)
-    this.ctx.fillText('Score: ' + this.players.self.score, 10, 28)
-
-    this.ctx.fillStyle = this.players.other.color
-    this.ctx.textAlign = 'right'
-    this.ctx.font = '12px Monospace'
-    this.ctx.fillText(this.players.other.name, this.world.x - 10, 15)
-    this.ctx.fillText('Score: ' + this.players.other.score, this.world.x - 10, 28)
+  drawScores() {
+    this.players.self.drawScore(false)
+    this.players.other.drawScore(true)
   }
 }
 
-function Player(game) {
-  this.game        = game
-  this.velocity    = { x: 0,  y: 0 }
-  this.size        = { x: 26, y: 40 }
-  this.position    = { x: 0,  y: game.world.y - this.size.y }
-  this.score       = 0
-  this.lastUpdate  = 0
-  this.updateDelta = 0
-  this.color       = null
-  this.name        = null
+class Player {
+  constructor(game) {
+    this.game        = game
+    this.velocity    = { x: 0,  y: 0 }
+    this.size        = { x: 26, y: 40 }
+    this.position    = { x: 0,  y: game.world.y - this.size.y }
+    this.score       = 0
+    this.lastUpdate  = 0
+    this.updateDelta = 0
+    this.color       = null
+    this.name        = null
 
-  this.speed       = 3
-  this.jump        = 8
-  this.stomp       = 15
+    this.speed       = 3
+    this.jumpVelocity  = 8
+    this.stomp       = 15
 
-  this.jumping     = false
-  this.walking     = false
-  this.doubleJump  = false
-  this.grounded    = true
+    this.jumping     = false
+    this.walking     = false
+    this.doubleJump  = false
+    this.grounded    = true
 
-  this.img         = new Image()
-  this.img.src     = 'assets/images/mario.png'
-  this.frame       = 0
-  this.frameIndex  = 0
-}
+    this.spriteSheet = new createjs.SpriteSheet({
+      framerate:  5
+    , images:     [ 'assets/images/stickman.png' ]
+    , frames:     { width: 32, height: 32, count: 8 }
+    , animations: {
+        stop:     0
+      , run:      [ 1, 2, 3, 4, 5, 6, 7 , 8 ]
+      }
+    })
+    this.animation   = new createjs.Sprite(this.spriteSheet, 'run')
+  }
 
-Player.prototype = {
-  walk: function(keys) {
+  jump() {
+    if (!this.jumping && this.grounded) {
+      this.jumping = true
+      this.grounded = false
+      this.velocity.y = -this.jumpVelocity
+    }
+    else if (!this.dblJump) {
+      this.dblJump = true
+      this.velocity.y = -this.jumpVelocity * 0.8
+    }
+  }
+
+  stomp() {
+    if (this.jumping && !this.grounded) {
+      this.velocity.y = this.stomp
+    }
+  }
+
+  walkLeft() {
+    this.velocity.x = -this.speed
+    this.walking = true
+  }
+
+  walkRight() {
+    this.velocity.x = this.speed
+    this.walking = true
+  }
+
+  walk(keys) {
     this.velocity.x = 0
     this.walking = false
     if (keys[37]) {
-      this.velocity.x = -this.speed
-      this.walking = true
-      this.frameIndex = 4
+      this.walkLeft()
     }
     if (keys[39]) {
-      this.velocity.x = this.speed
-      this.walking = true
-      this.frameIndex = 0
+      this.walkRight()
     }
   }
 
-, move: function(now) {
+  move(now) {
     let delta = (this.game.dt - now) / 1000000000000
 
     this.velocity.y += this.game.world.gravity * delta
@@ -215,18 +189,52 @@ Player.prototype = {
     this.position.x = this.position.x + this.velocity.x * delta
   }
 
-, draw: function(now) {
+  draw(now) {
+    // TODO: Sprites
     this.move(now)
     this.collide()
     this.enforceBoundingBox()
     this.lastUpdate = Date.now()
-    this.game.ctx.beginPath()
-    this.game.ctx.fillStyle = this.color
-    this.game.ctx.fillRect(this.position.x, this.position.y, this.size.x, this.size.y)
-    this.game.ctx.closePath()
+
+    // this.animation.x = this.position.x
+    // this.animation.y = this.position.y
+    this.game.stage.addChild(this.animation)
   }
 
-, collide: function() {
+  drawScore(flipped = false) {
+    let box   = new createjs.Shape()
+    let name  = new createjs.Text(this.name, '12px Monospace', this.color)
+    let score = new createjs.Text(`Score: ${this.score}`, '12px Monospace', this.color)
+
+    let i     = flipped ? this.game.world.x : 0
+    let align = flipped ? 'right' : 'left'
+
+    box.graphics.beginFill('#000000')
+    box.graphics.beginStroke(this.color)
+    box.graphics.moveTo(i,                  0)
+    box.graphics.lineTo(i,                 50)
+    box.graphics.lineTo(Math.abs(i - 150), 50)
+    box.graphics.lineTo(Math.abs(i - 200),  0)
+    box.graphics.lineTo(i,                  0)
+    box.graphics.endStroke()
+    box.graphics.endFill()
+
+    box.alpha       = 0.7
+
+    name.fillStyle  = this.color
+    name.textAlign  = align
+    name.x          = Math.abs(i - 10)
+    name.y          = 15
+
+    score.fillStyle = this.color
+    score.textAlign = align
+    score.x         = Math.abs(i - 10)
+    score.y         = 28
+
+    this.game.stage.addChild(box, name, score)
+  }
+
+  collide() {
     this.grounded = false
     for (let i in this.game.world.boxes) {
       let dir = this.game.colCheck(this, this.game.world.boxes[i])
@@ -247,7 +255,7 @@ Player.prototype = {
     }
   }
 
-, enforceBoundingBox: function() {
+  enforceBoundingBox() {
     if (this.position.x + this.size.x > this.game.world.x) {
       this.position.x = this.game.world.x - this.size.x
     }
@@ -266,7 +274,7 @@ Player.prototype = {
     }
   }
 
-, collectGoodie: function() {
+  collectGoodie() {
     for (let i in this.game.world.goodies) {
       let goodie = this.game.world.goodies[i]
       if (this.game.colCheck(this, goodie)) {
@@ -277,43 +285,52 @@ Player.prototype = {
   }
 }
 
-function Goodie(game, data) {
-  this.game     = game
-  this.color    = '#FF0000'
-  this.position = data.position
-  this.size     = { x: 10, y: 10 }
-  this.timeLeft = data.timeLeft
-}
+class Goodie extends createjs.Shape {
+  constructor(game, data) {
+    super()
 
-Goodie.prototype = {
-  draw: function() {
-    this.game.ctx.beginPath()
-    this.game.ctx.fillStyle = this.color
-    this.game.ctx.fillRect(this.position.x, this.position.y, this.size.x, this.size.y)
-    this.game.ctx.font = '10px Monospace';
-    this.game.ctx.textAlign = 'left';
-    this.game.ctx.textBaseline = 'top';
-    this.game.ctx.fillText(
-      Math.round(this.timeLeft / 1000)
-    , this.position.x + 10
-    , this.position.y - 10
-    )
-    this.game.ctx.closePath()
+    this.game     = game
+    this.color    = '#FF0000'
+    this.position = data.position
+    this.size     = { x: 10, y: 10 }
+    this.timeLeft = data.timeLeft
+    this.text     = new createjs.Text(this.timeLeft / 1000, '10px Monospace', this.color)
+    this.text.x   = this.position.x
+    this.text.y   = this.position.y - 10
+
+    this.graphics.beginFill(this.color)
+    this.graphics.drawRect(this.position.x, this.position.y, this.size.x, this.size.y)
+    this.graphics.endFill()
+  }
+
+  removeFromStage() {
+    this.game.stage.removeChild(this, this.text)
+  }
+
+  addToStage() {
+    this.game.stage.addChild(this, this.text)
   }
 }
 
-function Box(game, data) {
-  this.game     = game
-  this.color    = '#000000'
-  this.position = data.position
-  this.size     = data.size
-}
+class Box extends createjs.Shape {
+  constructor(game, data) {
+    super()
 
-Box.prototype = {
-  draw: function() {
-    this.game.ctx.beginPath()
-    this.game.ctx.fillStyle = this.color
-    this.game.ctx.fillRect(this.position.x, this.position.y, this.size.x, this.size.y)
-    this.game.ctx.closePath()
+    this.game     = game
+    this.color    = '#000000'
+    this.position = data.position
+    this.size     = data.size
+
+    this.graphics.beginFill(this.color)
+    this.graphics.drawRect(this.position.x, this.position.y, this.size.x, this.size.y)
+    this.graphics.endFill()
+  }
+
+  removeFromStage() {
+    this.game.stage.removeChild(this)
+  }
+
+  addToStage() {
+    this.game.stage.addChild(this)
   }
 }

@@ -4,5 +4,10 @@
   "eqeqeq": true,
   "esnext": true,
   "laxbreak": false,
-  "laxcomma": true
+  "laxcomma": true,
+  "predef": [
+    "createjs",
+    "io",
+    "require"
+  ]
 }

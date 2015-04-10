@@ -54,6 +54,21 @@ $(function() {
     }
   }
 
+  $(document).keypress(function(e) {
+    switch(e.keyCode) {
+      case 38: // up arrow
+        gameCore.players.self.jump()
+        break
+
+      case 40: // down arrow
+        gameCore.players.self.stomp()
+        break
+
+      default: return
+    }
+    e.preventDefault()
+  })
+
   socket.on('updatePosition', function(data) {
     gameCore.players.other.position = data.position
     gameCore.players.other.walking = data.walking
@@ -66,7 +81,9 @@ $(function() {
   })
 
   socket.on('updateGoodies', function(data) {
+    gameCore.world.goodies.map(i => i.removeFromStage())
     gameCore.world.goodies = gameCore.parseGoodies(data)
+    gameCore.world.goodies.map(i => i.addToStage())
   })
 
   socket.on('playerLeft', function() {
