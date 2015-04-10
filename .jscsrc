@@ -1,5 +1,5 @@
 {
-    "disallowCommaBeforeLineBreak": null,
+    "disallowCommaBeforeLineBreak": true,
     "disallowDanglingUnderscores": null,
     "disallowEmptyBlocks": true,
     "disallowImplicitTypeConversion": [ "string" ],
@@ -29,7 +29,7 @@
     "disallowSpacesInsideArrayBrackets": null,
     "disallowSpacesInsideObjectBrackets": null,
     "disallowSpacesInsideParentheses": null,
-    "disallowTrailingComma": null,
+    "disallowTrailingComma": true,
     "disallowTrailingWhitespace": true,
     "disallowYodaConditions": true,
     "maximumLineLength": 120,
