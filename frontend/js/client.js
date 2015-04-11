@@ -61,7 +61,7 @@ $(function() {
     setInterval(function() {
       i = ++i % 3
       $('.overlay div').html(text + '<br>' + '.'.repeat(i + 1))
-    }, 500)
+    }, 1000)
   }
 
   function hideSpinner() {
@@ -103,6 +103,7 @@ $(function() {
     $('#game').remove()
     gameCore = undefined
     socket.emit('joinLobby', name)
+    showSpinner('searching game')
   })
 
   setInterval(sendPos, 1000 / fps)
