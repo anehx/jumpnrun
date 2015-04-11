@@ -31,7 +31,7 @@ run-server:
 	tmux attach
 
 run-backend:
-	cd backend && npm run start
+	cd backend && npm run watch
 
 run-frontend:
 	cd frontend && npm run start

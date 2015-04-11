@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "./node_modules/.bin/babel-node app.js"
+    "start": "./node_modules/.bin/babel-node app.js",
+    "watch": "nodemon ./node_modules/.bin/babel-node app.js"
   },
   "dependencies": {
     "babel": "^5.0.12",

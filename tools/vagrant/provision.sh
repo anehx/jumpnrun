@@ -12,10 +12,8 @@ sed -i -e 's/sendfile\s\+on/sendfile off/' /etc/nginx/nginx.conf
 curl -sL https://deb.nodesource.com/setup | bash -
 apt-get install -y nodejs
 
-# install jumpnrun
-npm install -g npm
-npm install -g broccoli-cli
-npm install -g bower
+# install jumpnrun and its dependencies
+npm install -g npm broccoli-cli bower nodemon
 cd /vagrant && su vagrant -c "make install"
 
 # configure nginx
