@@ -5,7 +5,7 @@ let Lobby = require('./lobby.js')
 let Server = module.exports = {
   games: {}
 
-, createGame: function() {
+, createGame() {
     let game            = new Lobby()
     this.games[game.id] = game
 
@@ -13,7 +13,7 @@ let Server = module.exports = {
     return game
   }
 
-, quitGame: function(game) {
+, quitGame(game) {
     for (let id in game.players) {
       game.removeClient(game.players[id])
     }

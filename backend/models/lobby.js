@@ -2,21 +2,21 @@
 
 let UUID = require('node-uuid')
 
-let Lobby = module.exports = function() {
-  this.id            = UUID()
-  this.players       = {}
+class Lobby {
+  constructor() {
+    this.id            = UUID()
+    this.players       = {}
 
-  this.world         = {
-    x: 1000
-  , y: 500
+    this.world         = {
+      x: 1000
+    , y: 500
+    }
+
+    this.world.boxes   = this.generateBoxes(30)
+    this.world.goodies = this.generateGoodies(1)
   }
 
-  this.world.boxes   = this.generateBoxes(30)
-  this.world.goodies = this.generateGoodies(1)
-}
-
-Lobby.prototype = {
-  addClient: function(client) {
+  addClient(client) {
     client.gameID           = this.id
     client.score            = 0
     this.players[client.id] = client
@@ -27,7 +27,7 @@ Lobby.prototype = {
     console.log('\tlobby.js::\tclient ' + client.id + ' joined game ' + this.id)
   }
 
-, removeClient: function(client) {
+  removeClient(client) {
     client.gameID           = null
     this.players[client.id] = undefined
 
@@ -36,7 +36,7 @@ Lobby.prototype = {
     console.log('\tlobby.js::\tclient ' + client.id + ' left game ' + this.id)
   }
 
-, generateBoxes: function(count) {
+  generateBoxes(count) {
     let boxes = []
     for (let i = 0; i < count; i++) {
       boxes.push({
@@ -53,7 +53,7 @@ Lobby.prototype = {
     return boxes
   }
 
-, score: function(client) {
+  score(client) {
     client.score++
     this.resetGoodies()
 
@@ -65,11 +65,11 @@ Lobby.prototype = {
     return data
   }
 
-, resetGoodies: function() {
+  resetGoodies() {
     this.world.goodies = this.generateGoodies(1)
   }
 
-, generateGoodies: function(count) {
+  generateGoodies(count) {
     let goodies = []
     for (let i = 0; i < count; i++) {
       goodies.push({
@@ -83,3 +83,5 @@ Lobby.prototype = {
     return goodies
   }
 }
+
+module.exports = Lobby
