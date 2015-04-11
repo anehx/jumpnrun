@@ -2,6 +2,18 @@ class GameCore {
   constructor(options) {
     this.id            = options.id
     this.dt            = new Date().getTime()
+    this.canvas        = document.createElement('canvas')
+    this.canvas.id     = 'game'
+    this.canvas.width  = this.world.x
+    this.canvas.height = this.world.y
+    this.stage         = new createjs.Stage(this.canvas)
+
+    document.body.appendChild(this.canvas)
+
+    this.players       = {
+      self:  new Player(this)
+    , other: new Player(this)
+    }
 
     this.world         = {
       gravity: 0.3
@@ -10,25 +22,6 @@ class GameCore {
     , boxes:   this.parseBoxes(options.world.boxes)
     , goodies: this.parseGoodies(options.world.goodies)
     }
-
-    this.canvas        = document.createElement('canvas')
-
-    this.canvas.id     = 'game'
-    this.canvas.width  = this.world.x
-    this.canvas.height = this.world.y
-    this.stage         = new createjs.Stage(this.canvas)
-
-    this.players       = {
-      self:  new Player(this)
-    , other: new Player(this)
-    }
-
-  }
-
-  init() {
-    document.body.appendChild(this.canvas)
-    this.world.boxes.map(box => box.addToStage())
-    this.world.goodies.map(goodie => goodie.addToStage())
   }
 
   parseGoodies(data) {
@@ -39,18 +32,6 @@ class GameCore {
     return data.map(i => new Box(this, i))
   }
 
-  drawBoxes() {
-    for (let box of this.world.boxes) {
-      box.addToStage()
-    }
-  }
-
-  drawGoodies() {
-    for (let goodie of this.world.goodies) {
-      goodie.draw()
-    }
-  }
-
   drawPlayers() {
     this.players.self.draw()
     this.players.other.draw()
@@ -58,10 +39,7 @@ class GameCore {
 
   draw(now) {
     // this.stage.removeAllChildren()
-    // this.drawBoxes()
     // this.drawPlayers()
-    // this.drawGoodies()
-    // this.drawScores()
     this.stage.update()
   }
 
@@ -109,29 +87,10 @@ class GameCore {
   }
 }
 
-class Player {
+class Player extends createjs.spriteSheet {
   constructor(game) {
-    this.game        = game
-    this.velocity    = { x: 0,  y: 0 }
-    this.size        = { x: 26, y: 40 }
-    this.position    = { x: 0,  y: game.world.y - this.size.y }
-    this.score       = 0
-    this.lastUpdate  = 0
-    this.updateDelta = 0
-    this.color       = null
-    this.name        = null
-
-    this.speed       = 3
-    this.jumpVelocity  = 8
-    this.stomp       = 15
-
-    this.jumping     = false
-    this.walking     = false
-    this.doubleJump  = false
-    this.grounded    = true
-
-    this.spriteSheet = new createjs.SpriteSheet({
-      framerate:  5
+    super({
+      framerate:  13
     , images:     [ 'assets/images/stickman.png' ]
     , frames:     { width: 32, height: 32, count: 8 }
     , animations: {
@@ -139,7 +98,25 @@ class Player {
       , run:      [ 1, 2, 3, 4, 5, 6, 7 , 8 ]
       }
     })
-    this.animation   = new createjs.Sprite(this.spriteSheet, 'run')
+
+    this.game        = game
+    this.velocity    = { x: 0,  y: 0 }
+    this.size        = { x: 26, y: 40 }
+    this.position    = { x: 0,  y: game.world.y - this.size.y }
+    this.score       = 0
+    this.color       = null
+    this.name        = null
+
+    this.speed       = 3
+    this.jumpVelocity = 8
+    this.stompVelocity = 15
+
+    this.jumping     = false
+    this.walking     = false
+    this.doubleJump  = false
+    this.grounded    = true
+
+    this.animation   = new createjs.Sprite(this.spriteSheet)
   }
 
   jump() {
@@ -156,7 +133,7 @@ class Player {
 
   stomp() {
     if (this.jumping && !this.grounded) {
-      this.velocity.y = this.stomp
+      this.velocity.y = this.stompVelocity
     }
   }
 
@@ -194,10 +171,9 @@ class Player {
     this.move(now)
     this.collide()
     this.enforceBoundingBox()
-    this.lastUpdate = Date.now()
 
-    // this.animation.x = this.position.x
-    // this.animation.y = this.position.y
+    this.animation.x = this.position.x
+    this.animation.y = this.position.y
     this.game.stage.addChild(this.animation)
   }
 
@@ -301,13 +277,7 @@ class Goodie extends createjs.Shape {
     this.graphics.beginFill(this.color)
     this.graphics.drawRect(this.position.x, this.position.y, this.size.x, this.size.y)
     this.graphics.endFill()
-  }
 
-  removeFromStage() {
-    this.game.stage.removeChild(this, this.text)
-  }
-
-  addToStage() {
     this.game.stage.addChild(this, this.text)
   }
 }
@@ -324,13 +294,7 @@ class Box extends createjs.Shape {
     this.graphics.beginFill(this.color)
     this.graphics.drawRect(this.position.x, this.position.y, this.size.x, this.size.y)
     this.graphics.endFill()
-  }
 
-  removeFromStage() {
-    this.game.stage.removeChild(this)
-  }
-
-  addToStage() {
     this.game.stage.addChild(this)
   }
 }

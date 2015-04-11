@@ -1,16 +1,16 @@
 $(function() {
   'use strict'
 
-  const OPTIONS = {
-    FPS:    60
-  , SERVER: 'http://jumpnrun.vm:3000'
-  }
+  const [fps, server] = [ 60 , 'http://jumpnrun.vm:3000' ]
 
-  window.socket = io.connect(OPTIONS.SERVER)
+  window.socket = io.connect(server)
 
   let defaultName = 'Player-' + Math.round(Math.random() * 1000000)
-  let name = prompt('Please enter your nickname', defaultName) || defaultName
-  socket.emit('joinLobby', name)
+  $('#name').val(defaultName)
+  $('#search').on('click', function() {
+    let name = $('#name').val() || defaultName
+    socket.emit('joinLobby', name)
+  })
 
   function animate(now) {
     if (typeof gameCore !== 'undefined') {
@@ -38,8 +38,6 @@ $(function() {
         gameCore.players.other.color = player.color
       }
     }
-
-    gameCore.init()
     requestNextAnimationFrame(animate)
   })
 
@@ -49,7 +47,6 @@ $(function() {
         position: gameCore.players.self.position
       , walking: gameCore.players.self.walking
       , jumping: gameCore.players.self.jumping
-      , frameIndex: gameCore.players.self.frameIndex
       })
     }
   }
@@ -71,9 +68,8 @@ $(function() {
 
   socket.on('updatePosition', function(data) {
     gameCore.players.other.position = data.position
-    gameCore.players.other.walking = data.walking
-    gameCore.players.other.jumping = data.jumping
-    gameCore.players.other.frameIndex = data.frameIndex
+    gameCore.players.other.walking  = data.walking
+    gameCore.players.other.jumping  = data.jumping
   })
 
   socket.on('updateScore', function(data) {
@@ -81,17 +77,15 @@ $(function() {
   })
 
   socket.on('updateGoodies', function(data) {
-    gameCore.world.goodies.map(i => i.removeFromStage())
+    gameCore.world.goodies.map(i => gameCore.stage.removeChild(i))
     gameCore.world.goodies = gameCore.parseGoodies(data)
-    gameCore.world.goodies.map(i => i.addToStage())
   })
 
   socket.on('playerLeft', function() {
     $('#game').remove()
     gameCore = undefined
-    console.log(socket.name)
     socket.emit('joinLobby', name)
   })
 
-  setInterval(sendPos, 1000 / OPTIONS.FPS)
+  setInterval(sendPos, 1000 / fps)
 });
