@@ -31,44 +31,47 @@ sio.sockets.on('connection', function(client) {
     let idleClients = sio.sockets.adapter.rooms.lobby
 
     if (typeof idleClients !== 'undefined' && Object.keys(idleClients).length === 2) {
-      let game = gameServer.createGame()
-      let players = []
-      let colors = [ '#FF0000', '#0000FF' ]
-      let i = 0
-
-      for (let clientID in idleClients) {
-        let c = sio.sockets.connected[clientID]
-        game.addClient(c)
-
-        players.push({
-          id: c.id
-        , name: c.name
-        , color: colors[i]
-        })
-        i++
-      }
-
-      sio.sockets.in(game.id).emit('joinedGame', {
-        world:   game.world
-      , id:      game.id
-      , players: players
-      })
-
-      setInterval(function() {
-        for (let i in game.world.goodies) {
-          let goodie = game.world.goodies[i]
-          if (goodie.timeLeft === 0) {
-            game.resetGoodies()
-          }
-          else {
-            goodie.timeLeft -= 1000
-          }
-          sio.sockets.in(game.id).emit('updateGoodies', game.world.goodies)
-        }
-      }, 1000)
+      startGame(idleClients)
     }
   }
 
+  function startGame(idleClients) {
+    let game = gameServer.createGame()
+    let players = []
+    let colors = [ '#FF0000', '#0000FF' ]
+    let i = 0
+
+    for (let clientID in idleClients) {
+      let c = sio.sockets.connected[clientID]
+      game.addClient(c)
+
+      players.push({
+        id: c.id
+      , name: c.name
+      , color: colors[i]
+      })
+      i++
+    }
+
+    sio.sockets.in(game.id).emit('joinedGame', {
+      world:   game.world
+    , id:      game.id
+    , players: players
+    })
+
+    setInterval(function() {
+      for (let i in game.world.goodies) {
+        let goodie = game.world.goodies[i]
+        if (goodie.timeLeft === 0) {
+          game.resetGoodies()
+        }
+        else {
+          goodie.timeLeft -= 1000
+        }
+        sio.sockets.in(game.id).emit('updateGoodies', game.world.goodies)
+      }
+    }, 1000)
+  }
   setInterval(checkForLobbies, 5 * 1000) // check for lobbies all 5 seconds
 
   client.on('sendPosition', function(data) {
