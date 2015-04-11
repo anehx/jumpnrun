@@ -1,8 +1,6 @@
-all: build
-
 build: cache-clean install-frontend
 	rm -rf frontend/dist
-	cd frontend && broccoli build dist
+	cd frontend && ./node_modules/.bin/broccoli build dist
 
 update: pull build install-backend
 
@@ -18,14 +16,13 @@ install: install-frontend install-backend
 install-frontend:
 	rm -rf frontend/tmp frontend/node_modules frontend/bower_components
 	cd frontend && npm install
-	cd frontend && bower install
+	cd frontend && bower install --allow-root
 
 install-backend:
 	rm -rf backend/node_modules
 	cd backend && npm install
 
 run:
-	vagrant ssh -c "sudo service nginx restart"
 	vagrant ssh -c "cd /vagrant && make run-server"
 
 run-server:
@@ -40,5 +37,6 @@ run-frontend:
 	cd frontend && npm run start
 
 vagrant:
+	rm -rf frontend/tmp frontend/node_modules frontend/bower_components backend/node_modules
 	vagrant plugin install vagrant-hostsupdater
 	vagrant up

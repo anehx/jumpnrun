@@ -3,12 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "broccoli serve"
+    "start": "./node_modules/.bin/broccoli serve"
   },
   "devDependencies": {
     "broccoli": "^0.15.3",
     "broccoli-babel-transpiler": "^5.0.0",
     "broccoli-clean-css": "^1.0.0",
+    "broccoli-cli": "^1.0.0",
     "broccoli-concat": "0.0.13",
     "broccoli-funnel": "^0.2.3",
     "broccoli-less-single": "^0.2.0",
