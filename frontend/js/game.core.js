@@ -2,26 +2,31 @@ class GameCore {
   constructor(options) {
     this.id            = options.id
     this.dt            = new Date().getTime()
+
+    this.world         = {
+      gravity: 0.3
+    , x:       options.world.x
+    , y:       options.world.y
+    , boxes:   this.parseBoxes(options.world.boxes)
+    , goodies: this.parseGoodies(options.world.goodies)
+    }
+
     this.canvas        = document.createElement('canvas')
     this.canvas.id     = 'game'
     this.canvas.width  = this.world.x
     this.canvas.height = this.world.y
     this.stage         = new createjs.Stage(this.canvas)
 
-    document.body.appendChild(this.canvas)
-
     this.players       = {
       self:  new Player(this)
     , other: new Player(this)
     }
+  }
 
-    this.world         = {
-      gravity: 0.3
-    , x: options.world.x
-    , y: options.world.y
-    , boxes:   this.parseBoxes(options.world.boxes)
-    , goodies: this.parseGoodies(options.world.goodies)
-    }
+  init() {
+    document.body.appendChild(this.canvas)
+    this.world.goodies.map(i => i.addToStage())
+    this.world.boxes.map(i => i.addToStage())
   }
 
   parseGoodies(data) {
@@ -35,12 +40,6 @@ class GameCore {
   drawPlayers() {
     this.players.self.draw()
     this.players.other.draw()
-  }
-
-  draw(now) {
-    // this.stage.removeAllChildren()
-    // this.drawPlayers()
-    this.stage.update()
   }
 
   colCheck(shapeA, shapeB) {
@@ -57,7 +56,6 @@ class GameCore {
       let oX = hWidths - Math.abs(vX)
       let oY = hHeights - Math.abs(vY)
       if (oX >= oY) {
-        // figures out on which side we are colliding (top, bottom, left, or right)
         if (vY > 0) {
           colDir = 't'
           shapeA.position.y += oY
@@ -87,17 +85,17 @@ class GameCore {
   }
 }
 
-class Player extends createjs.spriteSheet {
+class Player{
   constructor(game) {
-    super({
-      framerate:  13
-    , images:     [ 'assets/images/stickman.png' ]
-    , frames:     { width: 32, height: 32, count: 8 }
-    , animations: {
-        stop:     0
-      , run:      [ 1, 2, 3, 4, 5, 6, 7 , 8 ]
-      }
-    })
+    // super({
+    //   framerate:  13
+    // , images:     [ 'assets/images/stickman.png' ]
+    // , frames:     { width: 32, height: 32, count: 8 }
+    // , animations: {
+    //     stop:     0
+    //   , run:      [ 1, 2, 3, 4, 5, 6, 7 , 8 ]
+    //   }
+    // })
 
     this.game        = game
     this.velocity    = { x: 0,  y: 0 }
@@ -116,7 +114,7 @@ class Player extends createjs.spriteSheet {
     this.doubleJump  = false
     this.grounded    = true
 
-    this.animation   = new createjs.Sprite(this.spriteSheet)
+    // this.animation   = new createjs.Sprite(this)
   }
 
   jump() {
@@ -277,8 +275,14 @@ class Goodie extends createjs.Shape {
     this.graphics.beginFill(this.color)
     this.graphics.drawRect(this.position.x, this.position.y, this.size.x, this.size.y)
     this.graphics.endFill()
+  }
 
+  addToStage() {
     this.game.stage.addChild(this, this.text)
+  }
+
+  removeFromStage() {
+    this.game.stage.removeChild(this, this.text)
   }
 }
 
@@ -294,7 +298,13 @@ class Box extends createjs.Shape {
     this.graphics.beginFill(this.color)
     this.graphics.drawRect(this.position.x, this.position.y, this.size.x, this.size.y)
     this.graphics.endFill()
+  }
 
+  addToStage() {
     this.game.stage.addChild(this)
+  }
+
+  removeFromStage() {
+    this.game.stage.removeChild(this)
   }
 }

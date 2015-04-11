@@ -6,17 +6,19 @@ $(function() {
   window.socket = io.connect(server)
 
   let defaultName = 'Player-' + Math.round(Math.random() * 1000000)
-  $('#name').val(defaultName)
+  $('#name').val(defaultName).prop('placeholder', defaultName)
   $('#search').on('click', function() {
     let name = $('#name').val() || defaultName
     socket.emit('joinLobby', name)
+    $('.lobby').hide()
+    showSpinner('searching game')
   })
 
   function animate(now) {
     if (typeof gameCore !== 'undefined') {
       gameCore.players.self.walk(keys)
       gameCore.players.self.collectGoodie()
-      gameCore.draw(now)
+      gameCore.stage.update()
       requestNextAnimationFrame(animate)
     }
   }
@@ -38,6 +40,8 @@ $(function() {
         gameCore.players.other.color = player.color
       }
     }
+    hideSpinner()
+    gameCore.init()
     requestNextAnimationFrame(animate)
   })
 
@@ -49,6 +53,19 @@ $(function() {
       , jumping: gameCore.players.self.jumping
       })
     }
+  }
+
+  function showSpinner(text) {
+    $('.overlay').fadeIn()
+    let i = 0
+    setInterval(function() {
+      i = ++i % 3
+      $('.overlay div').html(text + '<br>' + '.'.repeat(i + 1))
+    }, 500)
+  }
+
+  function hideSpinner() {
+    $('.overlay').fadeOut()
   }
 
   $(document).keypress(function(e) {
@@ -77,8 +94,9 @@ $(function() {
   })
 
   socket.on('updateGoodies', function(data) {
-    gameCore.world.goodies.map(i => gameCore.stage.removeChild(i))
+    gameCore.world.goodies.map(i => i.removeFromStage())
     gameCore.world.goodies = gameCore.parseGoodies(data)
+    gameCore.world.goodies.map(i => i.addToStage())
   })
 
   socket.on('playerLeft', function() {
