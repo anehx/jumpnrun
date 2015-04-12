@@ -32,25 +32,25 @@ $(function() {
       let player = data.players[i]
 
       if (player.id === socket.id) {
-        gameCore.players.self.name = player.name
+        gameCore.players.self.name  = player.name
         gameCore.players.self.color = player.color
       }
       else {
-        gameCore.players.other.name = player.name
+        gameCore.players.other.name  = player.name
         gameCore.players.other.color = player.color
       }
     }
     hideSpinner()
     gameCore.init()
-    requestNextAnimationFrame(animate)
+    initKeypress()
   })
 
   function sendPos() {
     if (typeof gameCore !== 'undefined') {
       socket.emit('sendPosition', {
         position: gameCore.players.self.position
-      , walking: gameCore.players.self.walking
-      , jumping: gameCore.players.self.jumping
+      , walking:  gameCore.players.self.walking
+      , jumping:  gameCore.players.self.jumping
       })
     }
   }
@@ -67,21 +67,6 @@ $(function() {
   function hideSpinner() {
     $('.overlay').fadeOut()
   }
-
-  $(document).keypress(function(e) {
-    switch(e.keyCode) {
-      case 38: // up arrow
-        gameCore.players.self.jump()
-        break
-
-      case 40: // down arrow
-        gameCore.players.self.stomp()
-        break
-
-      default: return
-    }
-    e.preventDefault()
-  })
 
   socket.on('updatePosition', function(data) {
     gameCore.players.other.position = data.position
