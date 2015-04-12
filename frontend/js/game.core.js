@@ -1,8 +1,6 @@
 class GameCore {
   constructor(options) {
     this.id            = options.id
-    this.dt            = new Date().getTime()
-
     this.world         = {
       gravity: 0.3
     , x:       options.world.x

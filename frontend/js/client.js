@@ -14,12 +14,15 @@ $(function() {
     showSpinner('searching game')
   })
 
-  function animate(now) {
+  createjs.Ticker.addEventListener('tick', animate)
+  createjs.Ticker.useRAF = true
+  createjs.Ticker.setFPS(60)
+
+  function animate(e) {
     if (typeof gameCore !== 'undefined') {
-      gameCore.players.self.walk(keys)
-      gameCore.players.self.collectGoodie()
-      gameCore.stage.update()
-      requestNextAnimationFrame(animate)
+      gameCore.players.self.run(keys)
+      gameCore.drawPlayers(e.delta)
+      gameCore.stage.update(e)
     }
   }
 
