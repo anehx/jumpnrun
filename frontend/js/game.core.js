@@ -16,8 +16,8 @@ class GameCore {
     this.stage         = new createjs.Stage(this.canvas)
 
     this.players       = {
-      self:  new Player(this)
-    , other: new Player(this)
+      self:  new Player(this, false)
+    , other: new Player(this, true)
     }
   }
 
@@ -257,6 +257,55 @@ class Player{
   }
 }
 
+class ScoreBoard extends createjs.Shape {
+  constructor(player, flipped) {
+    super()
+
+    this.player    = player
+    this.color     = '#000000'
+    this.textColor = '#EEEEEE'
+    this.alpha     = 0.7
+    this.flipped   = flipped
+    this.font      = '12px Monospace'
+    this.name      = null
+    this.score     = null
+  }
+
+  addToStage() {
+    this.name  = new createjs.Text(this.player.name,              this.font, this.textColor)
+    this.score = new createjs.Text(`Score: ${this.player.score}`, this.font, this.textColor)
+    let i      = this.flipped ? this.player.game.world.x : 0
+    let align  = this.flipped ? 'right' : 'left'
+
+    this.graphics.beginFill(this.color)
+    this.graphics.beginStroke(this.player.color)
+    this.graphics.setStrokeStyle(3)
+    this.graphics.moveTo(i,                  0)
+    this.graphics.lineTo(i,                 50)
+    this.graphics.lineTo(Math.abs(i - 150), 50)
+    this.graphics.lineTo(Math.abs(i - 200),  0)
+    this.graphics.lineTo(i,                  0)
+    this.graphics.endStroke()
+    this.graphics.endFill()
+
+    this.name.fillStyle  = this.player.color
+    this.name.textAlign  = align
+    this.name.x          = Math.abs(i - 10)
+    this.name.y          = 15
+
+    this.score.fillStyle = this.player.color
+    this.score.textAlign = align
+    this.score.x         = Math.abs(i - 10)
+    this.score.y         = 28
+
+    this.player.game.stage.addChild(this, this.name, this.score)
+  }
+
+  updateScore() {
+    this.score.text = `Score: ${this.player.score}`
+  }
+}
+
 class Goodie extends createjs.Shape {
   constructor(game, data) {
     super()
@@ -269,13 +318,13 @@ class Goodie extends createjs.Shape {
     this.text     = new createjs.Text(this.timeLeft / 1000, '10px Monospace', this.color)
     this.text.x   = this.position.x
     this.text.y   = this.position.y - 10
-
-    this.graphics.beginFill(this.color)
-    this.graphics.drawRect(this.position.x, this.position.y, this.size.x, this.size.y)
-    this.graphics.endFill()
   }
 
   addToStage() {
+    this.graphics.beginFill(this.color)
+    this.graphics.drawRect(this.position.x, this.position.y, this.size.x, this.size.y)
+    this.graphics.endFill()
+
     this.game.stage.addChild(this, this.text)
   }
 
@@ -292,13 +341,13 @@ class Box extends createjs.Shape {
     this.color    = '#000000'
     this.position = data.position
     this.size     = data.size
-
-    this.graphics.beginFill(this.color)
-    this.graphics.drawRect(this.position.x, this.position.y, this.size.x, this.size.y)
-    this.graphics.endFill()
   }
 
   addToStage() {
+    this.graphics.beginFill(this.color)
+    this.graphics.drawRect(this.position.x, this.position.y, this.size.x, this.size.y)
+    this.graphics.endFill()
+
     this.game.stage.addChild(this)
   }
 
