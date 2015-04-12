@@ -25,6 +25,9 @@ class GameCore {
     document.body.appendChild(this.canvas)
     this.world.goodies.map(i => i.addToStage())
     this.world.boxes.map(i => i.addToStage())
+
+    this.players.self.addToStage()
+    this.players.other.addToStage()
   }
 
   parseGoodies(data) {
@@ -33,11 +36,6 @@ class GameCore {
 
   parseBoxes(data) {
     return data.map(i => new Box(this, i))
-  }
-
-  drawPlayers() {
-    this.players.self.draw()
-    this.players.other.draw()
   }
 
   colCheck(shapeA, shapeB) {
@@ -77,42 +75,50 @@ class GameCore {
     return colDir
   }
 
-  drawScores() {
-    this.players.self.drawScore(false)
-    this.players.other.drawScore(true)
+  drawPlayers(delta) {
+    this.players.self.draw(delta)
+    this.players.other.draw(delta)
   }
 }
 
-class Player{
-  constructor(game) {
-    // super({
-    //   framerate:  13
-    // , images:     [ 'assets/images/stickman.png' ]
-    // , frames:     { width: 32, height: 32, count: 8 }
-    // , animations: {
-    //     stop:     0
-    //   , run:      [ 1, 2, 3, 4, 5, 6, 7 , 8 ]
-    //   }
-    // })
-
+class Player {
+  constructor(game, flipped) {
     this.game        = game
     this.velocity    = { x: 0,  y: 0 }
-    this.size        = { x: 26, y: 40 }
+    this.size        = { x: 16, y: 32 }
     this.position    = { x: 0,  y: game.world.y - this.size.y }
     this.score       = 0
     this.color       = null
     this.name        = null
+    this.scoreboard  = new ScoreBoard(this, flipped)
 
     this.speed       = 3
     this.jumpVelocity = 8
     this.stompVelocity = 15
 
     this.jumping     = false
-    this.walking     = false
+    this.running     = false
     this.doubleJump  = false
     this.grounded    = true
 
-    // this.animation   = new createjs.Sprite(this)
+    this.spritesheet = new createjs.SpriteSheet({
+        images: [ 'assets/images/stickman.png' ]
+      , frames: { width: 32, height: 32, count: 9, regX: 8, regY: 0 }
+      , animations: {
+          idle: 0
+        , jump: 8
+        , run:  [ 1, 8, 'run', 0.4 ]
+      }
+    })
+    createjs.SpriteSheetUtils.addFlippedFrames(this.spritesheet, true, false, false)
+
+    this.sprite      = new createjs.Sprite(this.spritesheet)
+  }
+
+  addToStage() {
+    this.sprite.gotoAndPlay('idle')
+    this.scoreboard.addToStage()
+    this.game.stage.addChild(this.sprite)
   }
 
   jump() {
@@ -120,6 +126,7 @@ class Player{
       this.jumping = true
       this.grounded = false
       this.velocity.y = -this.jumpVelocity
+      this.sprite.gotoAndPlay('jump')
     }
     else if (!this.dblJump) {
       this.dblJump = true
@@ -130,86 +137,54 @@ class Player{
   stomp() {
     if (this.jumping && !this.grounded) {
       this.velocity.y = this.stompVelocity
+      this.sprite.gotoAndPlay('stomp')
     }
   }
 
-  walkLeft() {
+  runLeft() {
     this.velocity.x = -this.speed
-    this.walking = true
+    this.running    = true
   }
 
-  walkRight() {
+  runRight() {
     this.velocity.x = this.speed
-    this.walking = true
+    this.running    = true
   }
 
-  walk(keys) {
+  run(keys) {
     this.velocity.x = 0
-    this.walking = false
+    this.running    = false
     if (keys[37]) {
-      this.walkLeft()
+      this.runLeft()
     }
     if (keys[39]) {
-      this.walkRight()
+      this.runRight()
     }
   }
 
-  move(now) {
-    let delta = (this.game.dt - now) / 1000000000000
+  move(delta) {
+    delta /= 10
 
     this.velocity.y += this.game.world.gravity * delta
     this.position.y = this.position.y + this.velocity.y * delta
     this.position.x = this.position.x + this.velocity.x * delta
   }
 
-  draw(now) {
-    // TODO: Sprites
-    this.move(now)
+  draw(delta) {
+    this.move(delta)
     this.collide()
     this.enforceBoundingBox()
+    this.collectGoodie()
+    this.scoreboard.updateScore()
 
-    this.animation.x = this.position.x
-    this.animation.y = this.position.y
-    this.game.stage.addChild(this.animation)
-  }
-
-  drawScore(flipped = false) {
-    let box   = new createjs.Shape()
-    let name  = new createjs.Text(this.name, '12px Monospace', this.color)
-    let score = new createjs.Text(`Score: ${this.score}`, '12px Monospace', this.color)
-
-    let i     = flipped ? this.game.world.x : 0
-    let align = flipped ? 'right' : 'left'
-
-    box.graphics.beginFill('#000000')
-    box.graphics.beginStroke(this.color)
-    box.graphics.moveTo(i,                  0)
-    box.graphics.lineTo(i,                 50)
-    box.graphics.lineTo(Math.abs(i - 150), 50)
-    box.graphics.lineTo(Math.abs(i - 200),  0)
-    box.graphics.lineTo(i,                  0)
-    box.graphics.endStroke()
-    box.graphics.endFill()
-
-    box.alpha       = 0.7
-
-    name.fillStyle  = this.color
-    name.textAlign  = align
-    name.x          = Math.abs(i - 10)
-    name.y          = 15
-
-    score.fillStyle = this.color
-    score.textAlign = align
-    score.x         = Math.abs(i - 10)
-    score.y         = 28
-
-    this.game.stage.addChild(box, name, score)
+    this.sprite.x = this.position.x
+    this.sprite.y = this.position.y
   }
 
   collide() {
     this.grounded = false
-    for (let i in this.game.world.boxes) {
-      let dir = this.game.colCheck(this, this.game.world.boxes[i])
+    for (let box of this.game.world.boxes) {
+      let dir = this.game.colCheck(this, box)
       if (dir === 'l' || dir === 'r') {
         this.velocity.x = 0
         this.jumping = false
@@ -218,6 +193,9 @@ class Player{
         this.grounded = true
         this.jumping = false
         this.dblJump = false
+        if (!this.running) {
+          this.sprite.gotoAndPlay('idle')
+        }
       } else if (dir === 't') {
         this.velocity.y = this.game.world.gravity * 2
       }
@@ -240,6 +218,9 @@ class Player{
       this.jumping = false
       this.grounded = true
       this.dblJump = false
+      if (!this.running) {
+        this.sprite.gotoAndPlay('idle')
+      }
     }
     else if (this.position.y < 0) {
       this.velocity.y = this.game.world.gravity * 2
