@@ -8,11 +8,12 @@ class Lobby {
     this.players       = {}
 
     this.world         = {
-      x: 1000
-    , y: 500
+      x: 1280
+    , y: 720
+    , areas: 8
     }
 
-    this.world.boxes   = this.generateBoxes(30)
+    this.world.boxes   = this.generateBoxes()
     this.world.goodies = this.generateGoodies(1)
   }
 
@@ -36,20 +37,34 @@ class Lobby {
     console.log('\tlobby.js::\tclient ' + client.id + ' left game ' + this.id)
   }
 
-  generateBoxes(count) {
-    let boxes = []
-    for (let i = 0; i < count; i++) {
-      boxes.push({
-        position: {
-          x: Math.floor(Math.random() * this.world.x)
-        , y: Math.floor(Math.random() * 7 + 1) * this.world.y / 6
-        }
-      , size: {
-          x: Math.floor(Math.random() * 150) + 40
-        , y: 16
-        }
-      })
+  generateBoxes() {
+    const padding    = 20
+    const minPerArea = 3
+    const maxPerArea = 6
+    const minWidth   = 60
+
+    let boxes        = []
+
+    for (let i = 1; i < this.world.areas; i++) {
+      let posY     = this.world.y / this.world.areas * i
+      let count    = Math.floor(Math.random() * maxPerArea) + minPerArea
+      let maxWidth = Math.floor(this.world.x / count - padding)
+
+      for (let j = 0; j < count; j++) {
+        let width = Math.floor(Math.random() * maxWidth) + minWidth
+        boxes.push({
+          size: {
+            x: width
+          , y: 12
+          }
+        , position: {
+              x: this.world.x / count * j + Math.floor(Math.random() * (maxWidth - width)) + 2
+            , y: posY
+          }
+        })
+      }
     }
+
     return boxes
   }
 
@@ -71,11 +86,12 @@ class Lobby {
 
   generateGoodies(count) {
     let goodies = []
+
     for (let i = 0; i < count; i++) {
       goodies.push({
         position: {
           x: Math.floor(Math.random() * this.world.x)
-        , y: Math.floor(Math.random() * 5 + 1) * this.world.y / 6 - 25
+        , y: this.world.y / this.world.areas * (Math.floor(Math.random() * (this.world.areas - 1)) + 1) - 25
         }
       , timeLeft: 15 * 1000
       })
