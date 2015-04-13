@@ -85,7 +85,7 @@ class Player {
   constructor(game, flipped) {
     this.game        = game
     this.velocity    = { x: 0,  y: 0 }
-    this.size        = { x: 16, y: 32 }
+    this.size        = { x: 19, y: 32 }
     this.position    = { x: 0,  y: game.world.y - this.size.y }
     this.score       = 0
     this.color       = null
@@ -103,15 +103,13 @@ class Player {
 
     this.spritesheet = new createjs.SpriteSheet({
         images: [ 'assets/images/stickman.png' ]
-      , frames: { width: 32, height: 32, count: 9, regX: 8, regY: 0 }
+      , frames: { width: 19, height: 32, count: 9 }
       , animations: {
           idle: 0
         , jump: 8
         , run:  [ 1, 8, 'run', 0.4 ]
       }
     })
-    createjs.SpriteSheetUtils.addFlippedFrames(this.spritesheet, true, false, false)
-
     this.sprite      = new createjs.Sprite(this.spritesheet)
   }
 
@@ -142,11 +140,25 @@ class Player {
   }
 
   runLeft() {
+    if (this.sprite.currentAnimation !== 'run' || this.sprite.scaleX !== -1) {
+      this.sprite.scaleX = -1
+      this.sprite.regX   = this.size.x
+      if (!this.jumping) {
+        this.sprite.gotoAndPlay('run')
+      }
+    }
     this.velocity.x = -this.speed
     this.running    = true
   }
 
   runRight() {
+    if (this.sprite.currentAnimation !== 'run' || this.sprite.scaleX !== 1) {
+      this.sprite.scaleX = 1
+      this.sprite.regX   = 0
+      if (!this.jumping) {
+        this.sprite.gotoAndPlay('run')
+      }
+    }
     this.velocity.x = this.speed
     this.running    = true
   }
@@ -154,10 +166,10 @@ class Player {
   run(keys) {
     this.velocity.x = 0
     this.running    = false
-    if (keys[37]) {
+    if (keys[37] && !keys[39]) {
       this.runLeft()
     }
-    if (keys[39]) {
+    if (keys[39] && !keys[37]) {
       this.runRight()
     }
   }
@@ -206,8 +218,8 @@ class Player {
   }
 
   enforceBoundingBox() {
-    if (this.position.x + this.size.x > this.game.world.x) {
-      this.position.x = this.game.world.x - this.size.x
+    if (this.position.x + this.size.x / 2 > this.game.world.x) {
+      this.position.x = this.game.world.x - this.size.x / 2
     }
     else if (this.position.x < 0) {
       this.position.x = 0

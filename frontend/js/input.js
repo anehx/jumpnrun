@@ -23,7 +23,6 @@ window.initKeypress = function() {
   , on_keydown: function(e, count, auto) {
       if (!auto) {
         keys[e.keyCode] = true
-        gameCore.players.self.sprite.gotoAndPlay('run_h')
       }
     }
   , on_keyup: function(e) {
@@ -37,7 +36,6 @@ window.initKeypress = function() {
   , on_keydown: function(e, count, auto) {
       if (!auto) {
         keys[e.keyCode] = true
-        gameCore.players.self.sprite.gotoAndPlay('run')
       }
     }
   , on_keyup: function(e) {
