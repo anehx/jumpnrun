@@ -5,9 +5,9 @@ Vagrant.configure(2) do |config|
   config.vm.hostname = 'jumpnrun'
 
   config.vm.box = 'ubuntu/trusty64'
-  config.vm.box_url = 'https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box'
+  config.vm.box_url = 'https://vagrantcloud.com/ubuntu/boxes/trusty64/versions/14.04/providers/virtualbox.box'
 
-  config.vm.box = 'ubunty/trusty64'
+  config.vm.box = 'ubuntu/trusty64'
 
   config.hostsupdater.aliases = [ 'jumpnrun.vm' ]
   config.hostsupdater.remove_on_suspend = true
@@ -23,7 +23,7 @@ Vagrant.configure(2) do |config|
 
   config.ssh.forward_agent = true
 
-  config.vm.synced_folder '.', '/vagrant', type: 'nfs',  mount_options: [ 'rw', 'vers=3', 'tcp', 'fsc' ]
+  config.vm.synced_folder '.', '/vagrant', :nfs => { :mount_options => [ 'rw', 'vers=3', 'tcp', 'fsc' ] }
 
   config.vm.provision :shell, :path => 'tools/vagrant/provision.sh'
 end

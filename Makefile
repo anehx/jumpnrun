@@ -37,6 +37,5 @@ run-frontend:
 	cd frontend && npm run start
 
 vagrant:
-	rm -rf frontend/tmp frontend/node_modules frontend/bower_components backend/node_modules
 	vagrant plugin install vagrant-hostsupdater
 	vagrant up
