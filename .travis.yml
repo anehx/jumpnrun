@@ -1,0 +1,28 @@
+---
+language: node_js
+
+node_js:
+    - "0.12"
+
+sudo: false
+
+cache:
+    directories:
+        - backend/node_modules
+        - frontend/node_modules
+        - frontend/bower_components
+
+    before_install:
+        - "npm install -g npm@^2"
+
+    install:
+        - npm install -g bower broccoli-cli
+        - make install
+
+    script:
+        - make build
+        - make run
+
+    notifications:
+        email:
+            - anehxdzn@gmail.com
