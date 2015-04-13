@@ -1,6 +1,6 @@
 build: cache-clean install-frontend
 	rm -rf frontend/dist
-	cd frontend && ./node_modules/.bin/broccoli build dist
+	cd frontend && NODE_ENV=production ./node_modules/.bin/broccoli build dist
 
 update: pull build install-backend
 
@@ -31,10 +31,10 @@ run-server:
 	tmux attach
 
 run-backend:
-	cd backend && npm run watch
+	cd backend && NODE_ENV=development npm run watch
 
 run-frontend:
-	cd frontend && npm run start
+	cd frontend && NODE_ENV=development npm run start
 
 vagrant:
 	vagrant plugin install vagrant-hostsupdater

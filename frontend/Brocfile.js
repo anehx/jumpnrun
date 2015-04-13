@@ -34,13 +34,13 @@ var vendorJs = uglify(
   }
 )
 
-var appJs = uglify(
-  concat(
-    esTranspiler(appJsTree, {})
-  , {
-      inputFiles: [ '*.js' ]
-    , outputFile: '/app.js' }
-  )
+var appJs = concat(
+  esTranspiler(appJsTree, {})
+, {
+    inputFiles: [ '*.js' ]
+  , outputFile: '/app.js' }
 )
+
+if (process.env.NODE_ENV === 'production') appJs = uglify(appJs)
 
 module.exports = mergeTrees([ appCss, appJs, vendorJs, vendorCss ])
