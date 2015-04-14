@@ -26,4 +26,5 @@ Vagrant.configure(2) do |config|
   config.vm.synced_folder '.', '/vagrant', :nfs => { :mount_options => [ 'rw', 'vers=3', 'tcp', 'fsc' ] }
 
   config.vm.provision :shell, :path => 'tools/vagrant/provision.sh'
+  config.vm.provision :shell, :inline => 'service nginx restart', :run => 'always'
 end
