@@ -69,18 +69,6 @@ class Lobby {
     return boxes
   }
 
-  score(client) {
-    client.score++
-    this.resetGoodies()
-
-    let data = {
-      score:   client.score
-    , goodies: this.world.goodies
-    }
-
-    return data
-  }
-
   resetGoodies() {
     this.world.goodies = this.generateGoodies(1)
   }

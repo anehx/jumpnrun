@@ -79,12 +79,15 @@ $(function() {
 
   socket.on('updateScore', function(data) {
     gameCore.players.other.score = data
+    gameCore.players.other.scoreBoardContainer.updateScore()
   })
 
   socket.on('updateGoodies', function(data) {
-    gameCore.world.goodies.map(i => i.removeFromStage())
-    gameCore.world.goodies = gameCore.parseGoodies(data)
-    gameCore.world.goodies.map(i => i.addToStage())
+    gameCore.goodieContainer.updateGoodies(data)
+  })
+
+  socket.on('updateGoodieTime', function(data) {
+    gameCore.goodieContainer.updateGoodieTime(data.id, data.timeLeft)
   })
 
   socket.on('playerLeft', function() {
@@ -94,5 +97,5 @@ $(function() {
     showSpinner('Waiting for opponent')
   })
 
-  setInterval(sendPos, 1000 / fps)
+  setInterval(sendPos, 1000 / 45)
 });

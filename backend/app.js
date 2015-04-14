@@ -64,11 +64,12 @@ sio.sockets.on('connection', function(client) {
         let goodie = game.world.goodies[i]
         if (goodie.timeLeft === 0) {
           game.resetGoodies()
+          sio.sockets.in(game.id).emit('updateGoodies', game.world.goodies)
         }
         else {
           goodie.timeLeft -= 1000
+          sio.sockets.in(game.id).emit('updateGoodieTime', goodie )
         }
-        sio.sockets.in(game.id).emit('updateGoodies', game.world.goodies)
       }
     }, 1000)
   }
@@ -80,9 +81,10 @@ sio.sockets.on('connection', function(client) {
 
   client.on('scored', function() {
     let game = gameServer.games[client.gameID]
-    let data = game.score(client)
-    client.broadcast.to(client.gameID).emit('updateScore', data.score)
-    sio.sockets.in(client.gameID).emit('updateGoodies', data.goodies)
+    game.resetGoodies()
+    client.score++
+    client.broadcast.to(client.gameID).emit('updateScore', client.score)
+    sio.sockets.in(client.gameID).emit('updateGoodies', game.world.goodies)
   })
 
   client.on('disconnect', function() {
