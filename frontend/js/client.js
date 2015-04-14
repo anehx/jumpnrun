@@ -11,7 +11,7 @@ $(function() {
     let name = $('#name').val() || defaultName
     socket.emit('joinLobby', name)
     $('.lobby').hide()
-    showSpinner('searching game')
+    showSpinner('Waiting for opponent')
   })
 
   createjs.Ticker.addEventListener('tick', animate)
@@ -91,7 +91,7 @@ $(function() {
     $('#game').remove()
     gameCore = undefined
     socket.emit('joinLobby', name)
-    showSpinner('searching game')
+    showSpinner('Waiting for opponent')
   })
 
   setInterval(sendPos, 1000 / fps)

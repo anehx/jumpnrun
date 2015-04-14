@@ -8,8 +8,8 @@ class Lobby {
     this.players       = {}
 
     this.world         = {
-      x: 1280
-    , y: 720
+      x: 1024
+    , y: 768
     , areas: 8
     }
 
@@ -38,9 +38,9 @@ class Lobby {
   }
 
   generateBoxes() {
-    const padding    = 20
-    const minPerArea = 3
-    const maxPerArea = 6
+    const padding    = 50
+    const minPerArea = 2
+    const maxPerArea = 4
     const minWidth   = 60
 
     let boxes        = []
@@ -53,7 +53,8 @@ class Lobby {
       for (let j = 0; j < count; j++) {
         let width = Math.floor(Math.random() * maxWidth) + minWidth
         boxes.push({
-          size: {
+          id: UUID()
+        , size: {
             x: width
           , y: 12
           }
@@ -89,7 +90,12 @@ class Lobby {
 
     for (let i = 0; i < count; i++) {
       goodies.push({
-        position: {
+        id: UUID()
+      , size: {
+          x: 10
+        , y: 10
+        }
+      , position: {
           x: Math.floor(Math.random() * this.world.x)
         , y: this.world.y / this.world.areas * (Math.floor(Math.random() * (this.world.areas - 1)) + 1) - 25
         }
