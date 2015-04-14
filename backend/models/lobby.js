@@ -80,8 +80,8 @@ class Lobby {
       goodies.push({
         id: UUID()
       , size: {
-          x: 10
-        , y: 10
+          x: 12
+        , y: 12
         }
       , position: {
           x: Math.floor(Math.random() * this.world.x)

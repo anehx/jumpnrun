@@ -49,22 +49,21 @@ class GoodieContainer extends createjs.Container {
   }
 }
 
-class Goodie extends createjs.Shape {
+class Goodie extends createjs.Bitmap {
   constructor(data) {
-    super()
+    super(loader.getResult('goodie_tile'))
 
     this.id       = data.id
     this.position = data.position
     this.size     = data.size
     this.timeLeft = data.timeLeft
-    this.text     = new createjs.Text(this.timeLeft / 1000, '10px Monospace', this.color)
+    this.text     = new createjs.Text(this.timeLeft / 1000, '10px sans-serif', this.color)
+    this.text.align = 'center'
     this.text.x   = this.position.x
-    this.text.y   = this.position.y - 10
-    this.color    = '#FF0000'
-
-    this.graphics.beginFill(this.color)
-    this.graphics.drawRect(this.position.x, this.position.y, this.size.x, this.size.y)
-    this.graphics.endFill()
+    this.text.y   = this.position.y - this.size.y
+    this.x        = this.position.x
+    this.y        = this.position.y
+    this.shadow   = new createjs.Shadow('#FFA500', 1, 1, 3)
   }
 
   updateText() {

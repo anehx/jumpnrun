@@ -27,8 +27,9 @@ class Box extends createjs.Shape {
     this.position = data.position
     this.size     = data.size
     this.color    = '#000000'
+    this.pattern  = loader.getResult('box_tile')
 
-    this.graphics.beginFill(this.color)
+    this.graphics.beginBitmapFill(this.pattern)
     this.graphics.drawRect(this.position.x, this.position.y, this.size.x, this.size.y)
     this.graphics.endFill()
   }

@@ -8,7 +8,7 @@ $(function() {
   let defaultName = 'Player-' + Math.round(Math.random() * 1000000)
   $('#name').val(defaultName).prop('placeholder', defaultName)
   $('#search').on('click', function() {
-    let name = $('#name').val() || defaultName
+    window.name = $('#name').val() || defaultName
     socket.emit('joinLobby', name)
     $('.lobby').hide()
     showSpinner('Waiting for opponent')

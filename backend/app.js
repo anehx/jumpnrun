@@ -46,8 +46,8 @@ sio.sockets.on('connection', function(client) {
       game.addClient(c)
 
       players.push({
-        id: c.id
-      , name: c.name
+        id:    c.id
+      , name:  c.name
       , color: colors[i]
       })
       i++
