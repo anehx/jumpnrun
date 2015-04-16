@@ -1,4 +1,8 @@
-class GameCore {
+import BoxContainer    from './box'
+import GoodieContainer from './goodie'
+import Player          from './player'
+
+export default class GameCore {
   constructor(options) {
     this.id            = options.id
     this.world         = {

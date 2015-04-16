@@ -1,4 +1,6 @@
-class Player {
+import ScoreBoardContainer from './scoreboard'
+
+export default class Player {
   constructor(game) {
     this.game        = game
     this.velocity    = { x: 0,  y: 0 }

@@ -1,9 +1,11 @@
+import GameCore from './models/game.core'
+import { keys, initKeypress } from './input'
+import config from './config'
+
 $(function() {
   'use strict'
 
-  const [fps, server] = [ 60 , 'http://jumpnrun.vm:3000' ]
-
-  window.socket = io.connect(server)
+  window.socket = io.connect(`${config.url}:${config.serverPort}`)
 
   let defaultName = 'Player-' + Math.round(Math.random() * 1000000)
   $('#name').val(defaultName).prop('placeholder', defaultName)
@@ -50,11 +52,7 @@ $(function() {
 
   function sendPos() {
     if (typeof gameCore !== 'undefined') {
-      socket.emit('sendPosition', {
-        position: gameCore.players.self.position
-      , walking:  gameCore.players.self.walking
-      , jumping:  gameCore.players.self.jumping
-      })
+      socket.emit('sendPosition', gameCore.players.self.position)
     }
   }
 
@@ -72,9 +70,8 @@ $(function() {
   }
 
   socket.on('updatePosition', function(data) {
-    gameCore.players.other.position = data.position
-    gameCore.players.other.walking  = data.walking
-    gameCore.players.other.jumping  = data.jumping
+    gameCore.players.other.position.x = data.x
+    gameCore.players.other.position.y = data.y
   })
 
   socket.on('updateScore', function(data) {
@@ -97,5 +94,5 @@ $(function() {
     showSpinner('Waiting for opponent')
   })
 
-  setInterval(sendPos, 1000 / 45)
+  // setInterval(sendPos, 1000)
 });

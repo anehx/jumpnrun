@@ -1,4 +1,4 @@
-class ScoreBoardContainer extends createjs.Container {
+export default class ScoreBoardContainer extends createjs.Container {
   constructor(player, flipped) {
     super()
 

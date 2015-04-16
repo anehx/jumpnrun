@@ -11,6 +11,7 @@
     "broccoli-clean-css": "^1.0.0",
     "broccoli-cli": "^1.0.0",
     "broccoli-concat": "0.0.13",
+    "broccoli-fast-browserify": "^0.2.5",
     "broccoli-funnel": "^0.2.3",
     "broccoli-less-single": "^0.2.0",
     "broccoli-merge-trees": "^0.2.1",

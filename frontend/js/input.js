@@ -1,6 +1,7 @@
-window.initKeypress = function() {
-  window.listener = new window.keypress.Listener()
-  window.keys = []
+export let keys = []
+
+export function initKeypress() {
+  let listener = new window.keypress.Listener()
 
   listener.register_combo({
     keys: 'up'

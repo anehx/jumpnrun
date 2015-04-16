@@ -1,4 +1,6 @@
-class BoxContainer extends createjs.Container {
+import loader from '../preload'
+
+export default class BoxContainer extends createjs.Container {
   constructor(game, rawBoxes) {
     super()
 
