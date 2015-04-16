@@ -1,8 +1,8 @@
 'use strict'
 
-let UUID = require('node-uuid')
+import UUID from 'node-uuid'
 
-class Lobby {
+export default class Lobby {
   constructor() {
     this.id            = UUID()
     this.players       = {}
@@ -93,5 +93,3 @@ class Lobby {
     return goodies
   }
 }
-
-module.exports = Lobby

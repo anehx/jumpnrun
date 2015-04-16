@@ -1,8 +1,8 @@
 'use strict'
 
-let Lobby = require('./lobby.js')
+import Lobby from './lobby'
 
-let Server = module.exports = {
+let Server = {
   games: {}
 
 , createGame() {
@@ -21,3 +21,5 @@ let Server = module.exports = {
     console.log('\tserver.js::\tdeleted game ' + game.id)
   }
 }
+
+export default Server

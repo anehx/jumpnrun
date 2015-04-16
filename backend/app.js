@@ -1,19 +1,18 @@
 'use strict'
 
-let gameport  = parseInt(process.env.SERVER_PORT, 10) || 3000
-let io        = require('socket.io')
-let express   = require('express')
-let http      = require('http')
-let morgan    = require('morgan')
+import gameServer from './models/server'
+import io         from 'socket.io'
+import express    from 'express'
+import http       from 'http'
+import config     from './common/config'
+
 let app       = express()
 let server    = http.createServer(app)
 
-server.listen(gameport)
-app.use(morgan('dev'))
-console.log('\texpress::\tserver listening on port ' + gameport + '\n')
+server.listen(config.serverPort)
+console.log('\texpress::\tserver listening on port ' + config.serverPort + '\n')
 
 /* Socket.IO server set up. */
-let gameServer = require('./models/server.js')
 let sio = io.listen(server)
 
 sio.sockets.on('connection', function(client) {
