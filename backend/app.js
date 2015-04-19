@@ -9,8 +9,8 @@ import config     from './common/config'
 let app       = express()
 let server    = http.createServer(app)
 
-server.listen(config.serverPort)
-console.log('\texpress::\tserver listening on port ' + config.serverPort + '\n')
+server.listen(config.server.port)
+console.log('\texpress::\tserver listening on port ' + config.server.port + '\n')
 
 /* Socket.IO server set up. */
 let sio = io.listen(server)

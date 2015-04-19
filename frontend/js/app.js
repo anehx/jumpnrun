@@ -5,7 +5,7 @@ import config from './config'
 $(function() {
   'use strict'
 
-  window.socket = io.connect(`${config.url}:${config.serverPort}`)
+  window.socket = io.connect(`${config.server.url}:${config.server.port}`)
 
   let defaultName = 'Player-' + Math.round(Math.random() * 1000000)
   $('#name').val(defaultName).prop('placeholder', defaultName)
@@ -18,12 +18,12 @@ $(function() {
 
   createjs.Ticker.addEventListener('tick', animate)
   createjs.Ticker.useRAF = true
-  createjs.Ticker.setFPS(60)
+  createjs.Ticker.setFPS(config.client.fps)
 
   function animate(e) {
     if (typeof gameCore !== 'undefined') {
-      gameCore.players.self.run(keys)
-      gameCore.drawPlayers(e.delta)
+      gameCore.players.self.sprite.x = gameCore.players.self.position.x
+      gameCore.players.self.sprite.y = gameCore.players.self.position.y
       gameCore.stage.update(e)
     }
   }

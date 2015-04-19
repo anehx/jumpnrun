@@ -1,6 +1,8 @@
 'use strict'
 
-import UUID from 'node-uuid'
+import config  from '../common/config'
+import physics from '../common/physics'
+import UUID    from 'node-uuid'
 
 export default class Lobby {
   constructor() {
@@ -8,13 +10,38 @@ export default class Lobby {
     this.players       = {}
 
     this.world         = {
-      x: 1024
-    , y: 768
-    , areas: 8
+      x:       config.world.x
+    , y:       config.world.y
+    , areas:   config.world.areas
+    , boxes:   this.generateBoxes()
+    , goodies: this.generateGoodies()
     }
 
-    this.world.boxes   = this.generateBoxes()
-    this.world.goodies = this.generateGoodies(1)
+    this.localTime             = 0
+    this._deltaTime            = new Date().getTime()
+    this._lastDeltaTime        = new Date().getTime()
+
+    this._physicsDeltaTime     = new Date().getTime()
+    this._lastPhysicsDeltaTime = new Date().getTime()
+
+    this.startLobby()
+    this.startPhysics()
+  }
+
+  startLobby() {
+    setInterval(function() {
+      this._deltaTime     = new Date().getTime() - this._lastDeltaTime
+      this._lastDeltaTime = new Date().getTime()
+      this.localTime     += this._deltaTime / 1000
+    }, 4)
+  }
+
+  startPhysics() {
+    setInterval(function() {
+      this._physicsDeltaTime     = (new Date().getTime() - this._lastPhysicsDeltaTime) / 1000
+      this._lastPhysicsDeltaTime = new Date().getTime()
+      // this.updatePhysics()
+    }, config.server.physicsRate)
   }
 
   addClient(client) {
@@ -38,17 +65,17 @@ export default class Lobby {
   }
 
   generateBoxes() {
-    const padding    = 50
-    const minPerArea = 2
-    const maxPerArea = 4
-    const minWidth   = 60
+    const padding    = config.boxes.padding
+    const minPerArea = config.boxes.minPerArea
+    const maxPerArea = config.boxes.maxPerArea
+    const minWidth   = config.boxes.minWidth
 
     let boxes        = []
 
-    for (let i = 1; i < this.world.areas; i++) {
-      let posY     = this.world.y / this.world.areas * i
+    for (let i = 1; i < config.world.areas; i++) {
+      let posY     = config.world.y / config.world.areas * i
       let count    = Math.floor(Math.random() * maxPerArea) + minPerArea
-      let maxWidth = Math.floor(this.world.x / count - padding)
+      let maxWidth = Math.floor(config.world.x / count - padding)
 
       for (let j = 0; j < count; j++) {
         let width = Math.floor(Math.random() * maxWidth) + minWidth
@@ -59,7 +86,7 @@ export default class Lobby {
           , y: 12
           }
         , position: {
-              x: this.world.x / count * j + Math.floor(Math.random() * (maxWidth - width)) + 2
+              x: config.world.x / count * j + Math.floor(Math.random() * (maxWidth - width)) + 2
             , y: posY
           }
         })
@@ -70,13 +97,13 @@ export default class Lobby {
   }
 
   resetGoodies() {
-    this.world.goodies = this.generateGoodies(1)
+    this.world.goodies = this.generateGoodies()
   }
 
-  generateGoodies(count) {
+  generateGoodies() {
     let goodies = []
 
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < config.goodies.count; i++) {
       goodies.push({
         id: UUID()
       , size: {
@@ -84,8 +111,8 @@ export default class Lobby {
         , y: 12
         }
       , position: {
-          x: Math.floor(Math.random() * this.world.x)
-        , y: this.world.y / this.world.areas * (Math.floor(Math.random() * (this.world.areas - 1)) + 1) - 25
+          x: Math.floor(Math.random() * config.world.x)
+        , y: config.world.y / config.world.areas * (Math.floor(Math.random() * (config.world.areas - 1)) + 1) - 25
         }
       , timeLeft: 15 * 1000
       })

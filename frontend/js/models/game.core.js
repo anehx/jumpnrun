@@ -1,6 +1,8 @@
 import BoxContainer    from './box'
 import GoodieContainer from './goodie'
 import Player          from './player'
+import physics         from '../physics'
+import config          from '../config'
 
 export default class GameCore {
   constructor(options) {
@@ -26,6 +28,30 @@ export default class GameCore {
       self:  new Player(this, false)
     , other: new Player(this, true)
     }
+
+    this.localTime             = 0
+    this._deltaTime            = new Date().getTime()
+    this._lastDeltaTime        = new Date().getTime()
+
+    this._physicsDeltaTime     = new Date().getTime()
+    this._lastPhysicsDeltaTime = new Date().getTime()
+
+    this.startPhysics()
+  }
+
+  updatePhysics() {
+    physics.changePosition(this.players.self, this._physicsDeltaTime)
+    physics.collide(this.players.self)
+    physics.enforceBoundingBox(this.players.self)
+    physics.handleInput(this.players.self)
+  }
+
+  startPhysics() {
+    setInterval(() => {
+      this._physicsDeltaTime     = (new Date().getTime() - this._lastPhysicsDeltaTime) / 1000
+      this._lastPhysicsDeltaTime = new Date().getTime()
+      this.updatePhysics()
+    }, config.client.physicsRate)
   }
 
   init() {
@@ -35,43 +61,6 @@ export default class GameCore {
 
     this.players.self.addToStage(false)
     this.players.other.addToStage(true)
-  }
-
-  colCheck(shapeA, shapeB) {
-    // get the vectors to check against
-    let vX = (shapeA.position.x + shapeA.size.x / 2) - (shapeB.position.x + shapeB.size.x / 2)
-    let vY = (shapeA.position.y + shapeA.size.y / 2) - (shapeB.position.y + shapeB.size.y / 2)
-    // add the half widths and half heights of the objects
-    let hWidths  = shapeA.size.x / 2 + shapeB.size.x / 2
-    let hHeights = shapeA.size.y / 2 + shapeB.size.y / 2
-    let colDir = null
-
-    // if the x and y vector are less than the half width or half height - collision
-    if (Math.abs(vX) < hWidths && Math.abs(vY) < hHeights) {
-      let oX = hWidths - Math.abs(vX)
-      let oY = hHeights - Math.abs(vY)
-      if (oX >= oY) {
-        if (vY > 0) {
-          colDir = 't'
-          shapeA.position.y += oY
-        }
-        else {
-          colDir = 'b'
-          shapeA.position.y -= oY
-        }
-      }
-      else {
-        if (vX > 0) {
-          colDir = 'l'
-          shapeA.position.x += oX
-        }
-        else {
-          colDir = 'r'
-          shapeA.position.x -= oX
-        }
-      }
-    }
-    return colDir
   }
 
   drawPlayers(delta) {
