@@ -7,13 +7,7 @@ export default class GoodieContainer extends createjs.Container {
     this.game    = game
     this.goodies = []
 
-    rawGoodies.forEach(i => {
-      let goodie = new Goodie(i)
-
-      this.goodies[goodie.id] = goodie
-      this.addChild(goodie, goodie.text)
-    })
-
+    this.parseRawGoodies(rawGoodies)
   }
 
   removeGoodie(id) {
@@ -39,14 +33,18 @@ export default class GoodieContainer extends createjs.Container {
     this.game.stage.addChild(this)
   }
 
-  updateGoodies(data) {
-    this.removeAllChildren()
+  parseRawGoodies(data) {
     data.forEach(i => {
       let goodie = new Goodie(i)
 
       this.goodies[goodie.id] = goodie
       this.addChild(goodie, goodie.text)
     })
+  }
+
+  updateGoodies(data) {
+    this.removeAllChildren()
+    this.parseRawGoodies(data)
     this.updateCache()
   }
 }
