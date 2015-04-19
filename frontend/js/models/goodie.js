@@ -28,11 +28,6 @@ export default class GoodieContainer extends createjs.Container {
     this.updateCache()
   }
 
-  addToStage() {
-    this.cache(0, 0, this.game.world.x, this.game.world.y)
-    this.game.stage.addChild(this)
-  }
-
   parseRawGoodies(data) {
     data.forEach(i => {
       let goodie = new Goodie(i)

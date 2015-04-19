@@ -14,11 +14,6 @@ export default class BoxContainer extends createjs.Container {
       this.addChild(box)
     })
   }
-
-  addToStage() {
-    this.cache(0, 0, this.game.world.x, this.game.world.y)
-    this.game.stage.addChild(this)
-  }
 }
 
 class Box extends createjs.Shape {

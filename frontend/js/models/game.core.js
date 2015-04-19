@@ -56,8 +56,7 @@ export default class GameCore {
 
   init() {
     document.body.appendChild(this.canvas)
-    this.boxContainer.addToStage()
-    this.goodieContainer.addToStage()
+    this.stage.addChild(this.boxContainer, this.goodieContainer)
 
     this.players.self.addToStage(false)
     this.players.other.addToStage(true)
