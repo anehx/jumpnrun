@@ -1,5 +1,6 @@
 # Jump n' Run
 [![Build Status](https://api.travis-ci.org/anehx/jumpnrun.svg)](https://travis-ci.org/anehx/jumpnrun)
+[![Code Climate](https://codeclimate.com/repos/5533d4706956801c8c000b6b/badges/8f8412012c97786facd8/gpa.svg)](https://codeclimate.com/repos/5533d4706956801c8c000b6b/feed)
 
 A simple JS game
 
