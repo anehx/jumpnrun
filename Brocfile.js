@@ -9,8 +9,8 @@ var compileLess  = require('broccoli-less-single')
 var cleanCss     = require('broccoli-clean-css')
 var browserify   = require('broccoli-fast-browserify')
 
-var appJsTree    = mergeTrees([ funnel('js'), funnel('../backend/common') ])
-var appLessTree  = funnel('less')
+var appJsTree    = mergeTrees([ funnel('frontend/js'), funnel('backend/common') ])
+var appLessTree  = funnel('frontend/less')
 var vendorTree   = funnel('bower_components')
 
 var appCss       = compileLess(appLessTree, 'app.less', 'app.css')

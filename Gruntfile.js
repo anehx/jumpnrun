@@ -35,8 +35,12 @@ module.exports = function(grunt) {
 
   , broccoli: {
       frontend: {
-        config: 'frontend/Brocfile.js'
-      , dest: 'frontend/dest/'
+        dest: 'frontend/dist'
+      }
+    }
+  , shell: {
+      run: {
+        command: './run.sh'
       }
     }
   })
@@ -44,6 +48,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint')
   grunt.loadNpmTasks('grunt-jscs')
   grunt.loadNpmTasks('grunt-broccoli')
+  grunt.loadNpmTasks('grunt-shell')
 
-  grunt.registerTask('test', [ 'jshint', 'jscs' ])
+  grunt.registerTask('test', [ 'jshint', 'jscs', 'broccoli:frontend:build' ])
 }

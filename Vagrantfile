@@ -1,6 +1,10 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+unless Vagrant.has_plugin?("vagrant-hostsupdater")
+      raise 'A plugin is not installed! Please run `vagrant plugin install vagrant-hostsupdater`'
+end
+
 Vagrant.configure(2) do |config|
   config.vm.hostname = 'jumpnrun'
 
