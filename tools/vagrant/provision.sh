@@ -15,8 +15,8 @@ apt-get install -y nodejs
 # update npm
 npm install -g npm
 # install jumpnrun and its dependencies
-npm install -g broccoli-cli bower nodemon
-cd /vagrant && su vagrant -c "make install"
+npm install -g nodemon bower broccoli-cli grunt-cli
+cd /vagrant && su vagrant -c "npm install"
 
 # configure nginx
 ln -sf /vagrant/tools/vagrant/nginx.conf /etc/nginx/sites-enabled/jumpnrun

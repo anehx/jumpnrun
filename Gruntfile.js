@@ -38,17 +38,11 @@ module.exports = function(grunt) {
         dest: 'frontend/dist'
       }
     }
-  , shell: {
-      run: {
-        command: './run.sh'
-      }
-    }
   })
 
   grunt.loadNpmTasks('grunt-contrib-jshint')
   grunt.loadNpmTasks('grunt-jscs')
   grunt.loadNpmTasks('grunt-broccoli')
-  grunt.loadNpmTasks('grunt-shell')
 
   grunt.registerTask('test', [ 'jshint', 'jscs', 'broccoli:frontend:build' ])
 }
