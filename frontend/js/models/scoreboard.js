@@ -51,76 +51,19 @@ class ScoreBoard extends createjs.Shape {
 
     // background
     this.graphics.beginFill('#DDDDDD')
-    this.graphics.arc(
-      this.padding + this.innerRadius
-    , this.padding + this.outerRadius
-    , this.outerRadius
-    , 1.5 * Math.PI, 0.5 * Math.PI
-    ).lt(
-      this.boxWidth + this.innerRadius + this.padding
-    , this.padding + this.outerRadius * 2
-    ).mt(
-      this.padding + this.innerRadius
-    , this.padding
-    ).lt(
-      this.boxWidth + this.innerRadius + this.padding
-    , this.padding
-    ).arc(
-      this.boxWidth + this.innerRadius + this.padding
-    , this.padding + this.outerRadius
-    , this.outerRadius
-    , 1.5 * Math.PI, 0.5 * Math.PI
-    )
+    this.shapePath()
     this.graphics.endFill()
 
     // first stroke
     this.graphics.beginStroke('#888888')
     this.graphics.setStrokeStyle(5)
-    this.graphics.arc(
-      this.padding + this.innerRadius
-    , this.padding + this.outerRadius
-    , this.outerRadius
-    , 1.5 * Math.PI, 0.5 * Math.PI
-    ).lt(
-      this.boxWidth + this.innerRadius + this.padding
-    , this.padding + this.outerRadius * 2
-    ).mt(
-      this.padding + this.innerRadius
-    , this.padding
-    ).lt(
-      this.boxWidth + this.innerRadius + this.padding
-    , this.padding
-    ).arc(
-      this.boxWidth + this.innerRadius + this.padding
-    , this.padding + this.outerRadius
-    , this.outerRadius
-    , 1.5 * Math.PI, 0.5 * Math.PI
-    )
+    this.shapePath()
     this.graphics.endStroke()
 
     // second stroke
     this.graphics.beginStroke('#000000')
     this.graphics.setStrokeStyle(2)
-    this.graphics.arc(
-      this.padding + this.innerRadius
-    , this.padding + this.outerRadius
-    , this.outerRadius
-    , 1.5 * Math.PI, 0.5 * Math.PI
-    ).lt(
-      this.boxWidth + this.innerRadius + this.padding
-    , this.padding + this.outerRadius * 2
-    ).mt(
-      this.padding + this.innerRadius
-    , this.padding
-    ).lt(
-      this.boxWidth + this.innerRadius + this.padding
-    , this.padding
-    ).arc(
-      this.boxWidth + this.innerRadius + this.padding
-    , this.padding + this.outerRadius
-    , this.outerRadius
-    , 1.5 * Math.PI, 0.5 * Math.PI
-    )
+    this.shapePath()
     this.graphics.endStroke()
 
     // player color circle
@@ -149,6 +92,29 @@ class ScoreBoard extends createjs.Shape {
     this.score.x         = Math.abs(this.regX - 130)
     this.score.y         = 40
     this.score.shadow    = this.textShadow
+  }
+
+  shapePath() {
+    this.graphics.arc(
+      this.padding + this.innerRadius
+    , this.padding + this.outerRadius
+    , this.outerRadius
+    , 1.5 * Math.PI, 0.5 * Math.PI
+    ).lt(
+      this.boxWidth + this.innerRadius + this.padding
+    , this.padding + this.outerRadius * 2
+    ).mt(
+      this.padding + this.innerRadius
+    , this.padding
+    ).lt(
+      this.boxWidth + this.innerRadius + this.padding
+    , this.padding
+    ).arc(
+      this.boxWidth + this.innerRadius + this.padding
+    , this.padding + this.outerRadius
+    , this.outerRadius
+    , 1.5 * Math.PI, 0.5 * Math.PI
+    )
   }
 
   updateScore() {
