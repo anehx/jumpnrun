@@ -4,7 +4,7 @@
 [![Dependency Status](https://david-dm.org/anehx/jumpnrun.svg)](https://david-dm.org/anehx/jumpnrun)
 [![devDependency Status](https://david-dm.org/anehx/jumpnrun/dev-status.svg)](https://david-dm.org/anehx/jumpnrun#info=devDependencies)
 
-A simple JS game
+A nodejs jump n' run styled game written in ES6 style
 
 # Installation
 
