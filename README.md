@@ -1,5 +1,5 @@
 # Jump n' Run
-[![Build Status](https://api.travis-ci.org/anehx/jumpnrun.svg)](https://api.travis-ci.org/anehx/jumpnrun)
+[![Build Status](https://api.travis-ci.org/anehx/jumpnrun.svg)](https://travis-ci.org/anehx/jumpnrun)
 
 A simple JS game
 
