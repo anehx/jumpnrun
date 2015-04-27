@@ -69,7 +69,6 @@ export default class Player {
     this.score++
     this.scoreBoardContainer.updateScore()
     this.game.goodieContainer.removeGoodie(id)
-    console.log('scored')
     socket.emit('scored')
   }
 }
