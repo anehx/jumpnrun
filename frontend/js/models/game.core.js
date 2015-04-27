@@ -42,6 +42,7 @@ export default class GameCore {
   updatePhysics() {
     physics.changePosition(this.players.self, this._physicsDeltaTime)
     physics.collide(this.players.self)
+    physics.collectGoodie(this.players.self)
     physics.enforceBoundingBox(this.players.self)
     physics.handleInput(this.players.self)
   }
@@ -54,16 +55,16 @@ export default class GameCore {
     }, config.client.physicsRate)
   }
 
+  drawPlayers() {
+    this.players.self.beforeDraw()
+    this.players.other.beforeDraw()
+  }
+
   init() {
     document.body.appendChild(this.canvas)
     this.stage.addChild(this.boxContainer, this.goodieContainer)
 
     this.players.self.addToStage(false)
     this.players.other.addToStage(true)
-  }
-
-  drawPlayers(delta) {
-    this.players.self.draw(delta)
-    this.players.other.draw(delta)
   }
 }

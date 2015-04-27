@@ -1,11 +1,10 @@
 import GameCore from './models/game.core'
 import { keys, initKeypress } from './input'
 import config from './config'
+import socket from './socket'
 
 $(function() {
   'use strict'
-
-  window.socket = io.connect(`${config.server.url}:${config.server.port}`)
 
   let defaultName = 'Player-' + Math.round(Math.random() * 1000000)
   $('#name').val(defaultName).prop('placeholder', defaultName)
@@ -16,14 +15,13 @@ $(function() {
     showSpinner('Waiting for opponent')
   })
 
-  createjs.Ticker.addEventListener('tick', animate)
+  createjs.Ticker.addEventListener('tick', tick)
   createjs.Ticker.useRAF = true
   createjs.Ticker.setFPS(config.client.fps)
 
-  function animate(e) {
+  function tick(e) {
     if (typeof gameCore !== 'undefined') {
-      gameCore.players.self.sprite.x = gameCore.players.self.position.x
-      gameCore.players.self.sprite.y = gameCore.players.self.position.y
+      gameCore.drawPlayers()
       gameCore.stage.update(e)
     }
   }
@@ -52,7 +50,11 @@ $(function() {
 
   function sendPos() {
     if (typeof gameCore !== 'undefined') {
-      socket.emit('sendPosition', gameCore.players.self.position)
+      socket.emit('sendPosition', {
+        position: gameCore.players.self.position
+      , velocity: gameCore.players.self.velocity
+      , state:    gameCore.players.self.state
+      })
     }
   }
 
@@ -70,8 +72,9 @@ $(function() {
   }
 
   socket.on('updatePosition', function(data) {
-    gameCore.players.other.position.x = data.x
-    gameCore.players.other.position.y = data.y
+    gameCore.players.other.position = data.position
+    gameCore.players.other.velocity = data.velocity
+    gameCore.players.other.state    = data.state
   })
 
   socket.on('updateScore', function(data) {
@@ -94,5 +97,5 @@ $(function() {
     showSpinner('Waiting for opponent')
   })
 
-  // setInterval(sendPos, 1000)
+  setInterval(sendPos, 1000 / config.client.fps)
 });

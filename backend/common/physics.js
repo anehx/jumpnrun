@@ -84,6 +84,15 @@ let physics = {
     }
   }
 
+, collectGoodie(player) {
+    for (let id in player.game.goodies) {
+      let goodie = player.game.goodies[id]
+      if (this.colCheck(player, goodie)) {
+        player.collectGoodie(goodie.id)
+      }
+    }
+  }
+
 , jump(player) {
     if (player.state.jump < 2) {
       player.state.jump++

@@ -8,6 +8,7 @@ export default class GoodieContainer extends createjs.Container {
     this.goodies = []
 
     this.parseRawGoodies(rawGoodies)
+    this.cache(0, 0, game.world.x, game.world.y)
   }
 
   removeGoodie(id) {

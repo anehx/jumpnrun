@@ -78,7 +78,7 @@ export default class Lobby {
       let maxWidth = Math.floor(config.world.x / count - padding)
 
       for (let j = 0; j < count; j++) {
-        let width = Math.floor(Math.random() * maxWidth) + minWidth
+        let width = Math.round((Math.random() * (maxWidth - minWidth) + minWidth) / 12 ) * 12
         boxes.push({
           id: UUID()
         , size: {

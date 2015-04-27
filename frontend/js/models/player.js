@@ -1,6 +1,7 @@
 import ScoreBoardContainer    from './scoreboard'
 import physics                from '../physics'
 import { keys, initKeypress } from '../input'
+import socket                 from '../socket'
 
 export default class Player {
   constructor(game) {
@@ -35,6 +36,27 @@ export default class Player {
     this.sprite      = new createjs.Sprite(this.spritesheet)
   }
 
+  beforeDraw() {
+    this.sprite.x      = this.position.x
+    this.sprite.y      = this.position.y
+    this.sprite.regX   = this.velocity.x < 0 ? this.size.x : 0
+    this.sprite.scaleX = this.velocity.x < 0 ? -1          : 1
+
+    if (this.state.jump) {
+      if (this.sprite.currentAnimation !== 'jump') {
+        this.sprite.gotoAndPlay('jump')
+      }
+    }
+    else if (this.state.running) {
+      if (this.sprite.currentAnimation !== 'run') {
+        this.sprite.gotoAndPlay('run')
+      }
+    }
+    else if (this.sprite.currentAnimation !== 'idle') {
+      this.sprite.gotoAndPlay('idle')
+    }
+  }
+
   addToStage(flipped) {
     this.sprite.gotoAndPlay('idle')
     this.sprite.shadow = new createjs.Shadow(this.color, 0, 0, 2)
@@ -43,25 +65,11 @@ export default class Player {
     this.game.stage.addChild(this.sprite)
   }
 
-  draw(delta) {
-    this.move(delta)
-    this.collide()
-    this.enforceBoundingBox()
-    this.collectGoodie()
-
-    this.sprite.x = this.position.x
-    this.sprite.y = this.position.y
-  }
-
-  collectGoodie() {
-    for (let id in this.game.goodies) {
-      let goodie = this.game.goodies[id]
-      if (this.game.colCheck(this, goodie)) {
-        this.score++
-        this.scoreBoardContainer.updateScore()
-        this.game.goodieContainer.removeGoodie(goodie.id)
-        window.socket.emit('scored')
-      }
-    }
+  collectGoodie(id) {
+    this.score++
+    this.scoreBoardContainer.updateScore()
+    this.game.goodieContainer.removeGoodie(id)
+    console.log('scored')
+    socket.emit('scored')
   }
 }
