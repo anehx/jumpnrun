@@ -20,7 +20,7 @@
     "broccoli-env": "0.0.1",
     "broccoli-fast-browserify": "^0.2.5",
     "broccoli-funnel": "^0.2.3",
-    "broccoli-less-single": "^0.2.0",
+    "broccoli-less-single": "^0.3.0",
     "broccoli-merge-trees": "^0.2.1",
     "broccoli-uglify-js": "^0.1.3",
     "grunt": "^0.4.5",
