@@ -1,21 +1,32 @@
 /* global require, module */
 
+var browserify   = require('broccoli-fast-browserify')
+var cleanCss     = require('broccoli-clean-css')
+var compileLess  = require('broccoli-less-single')
+var concat       = require('broccoli-concat')
+var env          = require('broccoli-env').getEnv()
 var esTranspiler = require('broccoli-babel-transpiler')
 var funnel       = require('broccoli-funnel')
 var mergeTrees   = require('broccoli-merge-trees')
-var concat       = require('broccoli-concat')
 var uglify       = require('broccoli-uglify-js')
-var compileLess  = require('broccoli-less-single')
-var cleanCss     = require('broccoli-clean-css')
-var browserify   = require('broccoli-fast-browserify')
 
 var appJsTree    = mergeTrees([ funnel('frontend/js'), funnel('backend/common') ])
 var appLessTree  = funnel('frontend/less')
-var vendorTree   = funnel('bower_components')
-
 var appCss       = compileLess(appLessTree, 'app.less', 'app.css')
-var vendorCss    = compileLess(vendorTree, 'bootstrap/less/bootstrap.less', 'vendor.css')
+var appJs = browserify(
+  esTranspiler(appJsTree, {})
+, {
+    bundles: {
+      'app.js': {
+        entryPoints: [ 'app.js' ]
+      }
+    }
+  , externals: [ 'jquery' ]
+  }
+)
 
+var vendorTree   = funnel('bower_components')
+var vendorCss    = compileLess(vendorTree, 'bootstrap/less/bootstrap.less', 'vendor.css')
 var vendorJs = concat(
   vendorTree, {
     inputFiles: [
@@ -30,20 +41,7 @@ var vendorJs = concat(
   }
 )
 
-var appJs = browserify(
-  esTranspiler(appJsTree, {})
-, {
-    bundles: {
-      'app.js': {
-        entryPoints: [ 'app.js' ]
-      }
-    }
-  , externals: [ 'jquery' ]
-  }
-)
-
-if (process.env.NODE_ENV === 'production') {
-  // uglify only in prod
+if (env === 'production') {
   appJs     = uglify(appJs)
   vendorJs  = uglify(vendorJs)
   appCss    = cleanCss(appCss)

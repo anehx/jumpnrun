@@ -34,8 +34,14 @@ module.exports = function(grunt) {
     }
 
   , broccoli: {
-      frontend: {
+      prod: {
         dest: 'frontend/dist'
+      , env: 'production'
+      }
+    , dev: {
+        host: '0.0.0.0'
+      , port: 4200
+      , env: 'development'
       }
     }
   })
@@ -44,5 +50,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-jscs')
   grunt.loadNpmTasks('grunt-broccoli')
 
-  grunt.registerTask('test', [ 'jshint', 'jscs', 'broccoli:frontend:build' ])
+  grunt.registerTask('build-frontend', 'broccoli:prod:build')
+  grunt.registerTask('serve-frontend', 'broccoli:dev:serve')
+
+  grunt.registerTask('test-frontend', [ 'jshint:frontend', 'jscs:frontend', 'build-frontend' ])
+  grunt.registerTask('test-backend', [ 'jshint:backend', 'jscs:backend' ])
+  grunt.registerTask('test', [ 'test-backend', 'test-frontend', 'jshint:grunt', 'jscs:grunt' ])
 }

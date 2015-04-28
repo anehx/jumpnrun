@@ -21,6 +21,7 @@
     "broccoli-babel-transpiler": "^5.0.0",
     "broccoli-clean-css": "^1.0.0",
     "broccoli-concat": "0.0.13",
+    "broccoli-env": "0.0.1",
     "broccoli-fast-browserify": "^0.2.5",
     "broccoli-funnel": "^0.2.3",
     "broccoli-less-single": "^0.2.0",
