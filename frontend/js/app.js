@@ -8,12 +8,19 @@ $(function() {
 
   let defaultName = 'Player-' + Math.round(Math.random() * 1000000)
   $('#name').val(defaultName).prop('placeholder', defaultName)
-  $('#search').on('click', function() {
+  $('#search').on('click', start)
+  $('#name').keyup(function(e) {
+    if (e.which === 13) {
+      start()
+    }
+  })
+
+  function start() {
     window.name = $('#name').val() || defaultName
     socket.emit('joinLobby', name)
     $('.lobby').hide()
     showSpinner('Waiting for opponent')
-  })
+  }
 
   createjs.Ticker.addEventListener('tick', tick)
   createjs.Ticker.useRAF = true
