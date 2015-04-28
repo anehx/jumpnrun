@@ -1,4 +1,5 @@
 module.exports = function(grunt) {
+
   grunt.initConfig({
     jshint: {
       backend: {
@@ -44,16 +45,45 @@ module.exports = function(grunt) {
       , env: 'development'
       }
     }
+
+  , nodemon: {
+      dev: {
+        script: 'backend/app'
+      , options: {
+          exec: 'npm run babel-node'
+        }
+      }
+    }
+
+  , concurrent: {
+      run: {
+        tasks: [ 'nodemon:dev', 'broccoli:dev:serve' ]
+      , options: {
+          logConcurrentOutput: true
+        }
+      }
+    }
+
+  , shell: {
+      run: {
+        command: 'vagrant ssh -c "cd /vagrant && grunt concurrent:run"'
+      }
+    }
   })
 
   grunt.loadNpmTasks('grunt-contrib-jshint')
   grunt.loadNpmTasks('grunt-jscs')
   grunt.loadNpmTasks('grunt-broccoli')
+  grunt.loadNpmTasks('grunt-concurrent')
+  grunt.loadNpmTasks('grunt-nodemon')
+  grunt.loadNpmTasks('grunt-shell')
 
-  grunt.registerTask('build-frontend', 'broccoli:prod:build')
-  grunt.registerTask('serve-frontend', 'broccoli:dev:serve')
+  grunt.registerTask('test-frontend', [ 'jshint:frontend', 'jscs:frontend', 'build' ])
+  grunt.registerTask('test-backend',  [ 'jshint:backend', 'jscs:backend' ])
+  grunt.registerTask('test',          [ 'test-backend', 'test-frontend', 'jshint:grunt', 'jscs:grunt' ])
 
-  grunt.registerTask('test-frontend', [ 'jshint:frontend', 'jscs:frontend', 'build-frontend' ])
-  grunt.registerTask('test-backend', [ 'jshint:backend', 'jscs:backend' ])
-  grunt.registerTask('test', [ 'test-backend', 'test-frontend', 'jshint:grunt', 'jscs:grunt' ])
+  grunt.registerTask('build',         [ 'broccoli:prod:build' ])
+  grunt.registerTask('run',           [ 'shell:run' ])
+
+  grunt.registerTask('default',       [ 'run' ])
 }
