@@ -8,11 +8,17 @@ A nodejs jump n' run styled game written in ES6 style
 
 # Installation
 
+## Requirements
+* nodejs or iojs
+* grunt-cli
+* bower
+
 ## Vagrant
 To run the game in a VM, you need to install vagrant, vagrant-hostsupdater and virtualbox. Then run:
 ```
-$ vagrant up
-$ make run
+$ vagrant plugin install vagrant-hostsupdater # install required vagrant plugin
+$ vagrant up                                  # initialize the vagrant box
+$ grunt run                                   # start the development server on vagrant
 ```
 Then navigate to http://jumpnrun.vm in your browser to play.
 
