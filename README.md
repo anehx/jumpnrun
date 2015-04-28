@@ -15,7 +15,7 @@ A nodejs jump n' run styled game written in ES6 style
 * bower
 
 ## Vagrant
-To run the game in a VM, you need to install vagrant, vagrant-hostsupdater and virtualbox. Then run:
+To run the game in a VM, you need to install vagrant and virtualbox. Then run:
 ```shell
 $ vagrant plugin install vagrant-hostsupdater
 $ vagrant up
