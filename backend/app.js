@@ -6,14 +6,13 @@ import express    from 'express'
 import http       from 'http'
 import config     from './common/config'
 
-let app       = express()
-let server    = http.createServer(app)
+let app       = http.createServer()
 
-server.listen(config.server.port)
-console.log('\texpress::\tserver listening on port ' + config.server.port + '\n')
+app.listen(config.server.port)
+console.log('\tapp.js::\tserver listening on port ' + config.server.port + '\n')
 
 /* Socket.IO server set up. */
-let sio = io.listen(server)
+let sio = io.listen(app)
 
 sio.sockets.on('connection', function(client) {
   client.gameID = null
