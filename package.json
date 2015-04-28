@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "babel-node": "babel-node --stage 0",
-    "postinstall": "bower install",
+    "run-backend": "grunt run-backend",
+    "run-frontend": "grunt run-frontend",
     "test": "grunt test"
   },
   "dependencies": {
@@ -17,6 +17,7 @@
     "broccoli": "^0.16.2",
     "broccoli-babel-transpiler": "^5.0.0",
     "broccoli-clean-css": "^1.0.0",
+    "broccoli-cli": "^1.0.0",
     "broccoli-concat": "0.0.13",
     "broccoli-env": "0.0.1",
     "broccoli-fast-browserify": "^0.2.5",
@@ -26,6 +27,7 @@
     "broccoli-uglify-js": "^0.1.3",
     "grunt": "^0.4.5",
     "grunt-broccoli": "^0.4.0",
+    "grunt-cli": "^0.1.13",
     "grunt-concurrent": "^1.0.0",
     "grunt-contrib-jshint": "^0.11.2",
     "grunt-jscs": "^1.6.0",

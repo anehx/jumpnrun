@@ -6,7 +6,7 @@ $(function() {
   }
 
   let mute   = true
-  let path   = 'assets/sounds/'
+  let path   = 'sounds/'
   let sounds = [
     { id: 'background', src: 'background.ogg' }
   ]

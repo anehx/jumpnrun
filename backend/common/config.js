@@ -1,7 +1,7 @@
 const config = {
   server: {
     port:        3000
-  , url:         'http://jumpnrun.vm'
+  , url:         'http://localhost:8080'
   , physicsRate: 15
   , stateRate:   1000 / 45
   }

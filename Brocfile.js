@@ -11,6 +11,7 @@ var mergeTrees   = require('broccoli-merge-trees')
 var uglify       = require('broccoli-uglify-js')
 
 var appJsTree    = mergeTrees([ funnel('frontend/js'), funnel('backend/common') ])
+var appPublic    = funnel('frontend/public')
 var appLessTree  = funnel('frontend/less')
 var appCss       = compileLess(appLessTree, 'app.less', 'app.css')
 var appJs = browserify(
@@ -48,4 +49,4 @@ if (env === 'production') {
   vendorCss = cleanCss(vendorCss)
 }
 
-module.exports = mergeTrees([ appCss, appJs, vendorJs, vendorCss ])
+module.exports = mergeTrees([ appCss, appJs, appPublic, vendorJs, vendorCss ])

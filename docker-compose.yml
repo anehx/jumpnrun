@@ -1,0 +1,25 @@
+backend:
+    image: iojs
+    volumes:
+        - .:/usr/src/app
+    environment:
+        - NODE_ENV=development
+    command: npm --prefix=/usr/src/app run run-backend
+
+frontend:
+    image: iojs
+    volumes:
+        - .:/usr/src/app
+    environment:
+        - NODE_ENV=development
+    command: npm --prefix=/usr/src/app/ run run-frontend
+
+nginx:
+    image: nginx
+    volumes:
+        - ./tools/docker/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+        - "8080:80"
+    links:
+        - backend
+        - frontend

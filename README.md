@@ -14,14 +14,13 @@ A nodejs jump n' run styled game written in ES6 style
 * grunt-cli
 * bower
 
-## Vagrant
-To run the game in a VM, you need to install vagrant and virtualbox. Then run:
+## Docker
+To run the game in a docker container, you need to install docker and docker-compose. Then run:
 ```shell
-$ vagrant plugin install vagrant-hostsupdater
-$ vagrant up
-$ grunt run # start the development server on vagrant
+$ npm install && bower install
+$ docker-compose up
 ```
-Then navigate to http://jumpnrun.vm in your browser to play.
+Then navigate to http://localhost:8080 in your browser to play.
 
 # Test
 Run `grunt test` to test.

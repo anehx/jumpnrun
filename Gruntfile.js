@@ -50,23 +50,14 @@ module.exports = function(grunt) {
       dev: {
         script: 'backend/app'
       , options: {
-          exec: 'npm run babel-node'
-        }
-      }
-    }
-
-  , concurrent: {
-      run: {
-        tasks: [ 'nodemon:dev', 'broccoli:dev:serve' ]
-      , options: {
-          logConcurrentOutput: true
+          exec: './node_modules/.bin/babel-node'
         }
       }
     }
 
   , shell: {
-      run: {
-        command: 'vagrant ssh -c "cd /vagrant && grunt concurrent:run"'
+      clean: {
+        command: 'npm cache clean && rm -rf tmp/ etc/ node_modules/ bower_components/'
       }
     }
   })
@@ -74,7 +65,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint')
   grunt.loadNpmTasks('grunt-jscs')
   grunt.loadNpmTasks('grunt-broccoli')
-  grunt.loadNpmTasks('grunt-concurrent')
   grunt.loadNpmTasks('grunt-nodemon')
   grunt.loadNpmTasks('grunt-shell')
 
@@ -83,7 +73,8 @@ module.exports = function(grunt) {
   grunt.registerTask('test',          [ 'test-backend', 'test-frontend', 'jshint:grunt', 'jscs:grunt' ])
 
   grunt.registerTask('build',         [ 'broccoli:prod:build' ])
-  grunt.registerTask('run',           [ 'shell:run' ])
+  grunt.registerTask('clean',         [ 'shell:clean' ])
 
-  grunt.registerTask('default',       [ 'run' ])
+  grunt.registerTask('run-backend',   [ 'nodemon:dev' ])
+  grunt.registerTask('run-frontend',  [ 'broccoli:dev:serve' ])
 }

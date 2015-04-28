@@ -1,6 +1,6 @@
 const manifest = [
-  { src: 'assets/images/box_tile.png',    id: 'box_tile' }
-, { src: 'assets/images/goodie_tile.png', id: 'goodie_tile' }
+  { src: 'images/box_tile.png',    id: 'box_tile' }
+, { src: 'images/goodie_tile.png', id: 'goodie_tile' }
 ]
 
 let loader = new createjs.LoadQueue()

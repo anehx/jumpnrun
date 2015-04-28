@@ -25,7 +25,7 @@ export default class Player {
     }
 
     this.spritesheet = new createjs.SpriteSheet({
-        images: [ 'assets/images/stickman.png' ]
+        images: [ 'images/stickman.png' ]
       , frames: { width: 19, height: 32, count: 9 }
       , animations: {
           idle: 0

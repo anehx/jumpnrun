@@ -1,5 +1,24 @@
+---
 language: node_js
+
 node_js:
     - "0.12"
+
+sudo: false
+
+cache:
+    directories:
+        - node_modules
+        - bower_components
+
 before_install:
-    - "npm install -g grunt-cli bower"
+    - npm install -g npm@^2
+
+install:
+    - npm install -g grunt-cli bower
+    - npm install
+    - bower install
+
+notifications:
+    email:
+        - anehxdzn@gmail.com
