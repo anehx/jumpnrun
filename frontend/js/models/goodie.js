@@ -5,7 +5,6 @@ export default class GoodieContainer extends createjs.Container {
     super()
 
     this.game    = game
-    this.goodies = []
 
     this.parseRawGoodies(rawGoodies)
     this.cache(0, 0, game.world.x, game.world.y)
@@ -13,7 +12,6 @@ export default class GoodieContainer extends createjs.Container {
 
   removeGoodie(id) {
     let goodie = this.goodies[id]
-
     this.removeChild(goodie, goodie.text)
     delete this.goodies[id]
 
@@ -30,9 +28,9 @@ export default class GoodieContainer extends createjs.Container {
   }
 
   parseRawGoodies(data) {
+    this.goodies = []
     data.forEach(i => {
       let goodie = new Goodie(i)
-
       this.goodies[goodie.id] = goodie
       this.addChild(goodie, goodie.text)
     })

@@ -6,7 +6,7 @@ import express    from 'express'
 import http       from 'http'
 import config     from './common/config'
 
-let app       = http.createServer()
+let app = http.createServer()
 
 app.listen(config.server.port)
 console.log('\tapp.js::\tserver listening on port ' + config.server.port + '\n')

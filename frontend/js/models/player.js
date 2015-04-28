@@ -66,9 +66,9 @@ export default class Player {
   }
 
   collectGoodie(id) {
-    this.score++
-    this.scoreBoardContainer.updateScore()
     this.game.goodieContainer.removeGoodie(id)
     socket.emit('scored')
+    this.score++
+    this.scoreBoardContainer.updateScore()
   }
 }

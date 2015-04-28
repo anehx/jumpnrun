@@ -63,10 +63,10 @@ let physics = {
     return colDir
   }
 
-, collide(player) {
+, collide(player, boxes) {
     player.state.grounded = false
-    for (let id in player.game.boxes) {
-      let box = player.game.boxes[id]
+    for (let id in boxes) {
+      let box = boxes[id]
       let dir = this.colCheck(player, box)
       if (dir === 'l' || dir === 'r') {
         player.velocity.x = -player.velocity.x * config.physics.bounce
@@ -84,9 +84,9 @@ let physics = {
     }
   }
 
-, collectGoodie(player) {
-    for (let id in player.game.goodies) {
-      let goodie = player.game.goodies[id]
+, collectGoodie(player, goodies) {
+    for (let id in goodies) {
+      let goodie = goodies[id]
       if (this.colCheck(player, goodie)) {
         player.collectGoodie(goodie.id)
       }

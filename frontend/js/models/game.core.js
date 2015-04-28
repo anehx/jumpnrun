@@ -15,8 +15,6 @@ export default class GameCore {
 
     this.boxContainer    = new BoxContainer(this, options.world.boxes)
     this.goodieContainer = new GoodieContainer(this, options.world.goodies)
-    this.boxes           = this.boxContainer.boxes
-    this.goodies         = this.goodieContainer.goodies
 
     this.canvas        = document.createElement('canvas')
     this.canvas.id     = 'game'
@@ -41,8 +39,8 @@ export default class GameCore {
 
   updatePhysics() {
     physics.changePosition(this.players.self, this._physicsDeltaTime)
-    physics.collide(this.players.self)
-    physics.collectGoodie(this.players.self)
+    physics.collide(this.players.self, this.boxContainer.boxes)
+    physics.collectGoodie(this.players.self, this.goodieContainer.goodies)
     physics.enforceBoundingBox(this.players.self)
     physics.handleInput(this.players.self)
   }
