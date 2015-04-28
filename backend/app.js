@@ -2,7 +2,6 @@
 
 import gameServer from './models/server'
 import io         from 'socket.io'
-import express    from 'express'
 import http       from 'http'
 import config     from './common/config'
 
