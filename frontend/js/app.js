@@ -111,10 +111,10 @@ $(function() {
     let newRt = window.innerWidth / window.innerHeight
 
     if (newRt >= ratio) {
-      $('#game').css({height: '100%', width: 'auto'})
+      $('#game').css({ height: '100%', width: 'auto' })
     }
     else {
-      $('#game').css({height: 'auto', width: '100%'})
+      $('#game').css({ height: 'auto', width: '100%' })
     }
   }
 
