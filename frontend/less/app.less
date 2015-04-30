@@ -3,7 +3,7 @@ html, body {
 }
 
 body {
-    background-color: #EEEEEE;
+    background-color: #000000;
     text-align: center;
 }
 
@@ -16,26 +16,11 @@ body {
     margin: auto;
     position: absolute;
     top: 0; left: 0; bottom: 0; right: 0;
-    background-color: #FFFFFF;
-    border: 1px solid #DDDDDD;
-}
-
-.sound {
-    background-size: 100%;
-    height: 30px;
-    width: 30px;
-    position: absolute;
-    top: 50px;
-    left: 10%;
-    background-image: url('images/sound_play.png');
-}
-
-
-.sound.mute {
-    background-image: url('images/sound_mute.png');
+    background-color: #EEEEEE;
 }
 
 .lobby {
+    background-color: #EEEEEE;
     margin: auto;
     position: absolute;
     top: 0; left: 0; bottom: 0; right: 0;
@@ -44,17 +29,23 @@ body {
     padding: 5px;
     border: 1px solid #CCCCCC;
     border-radius: 5px;
-    -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
-    -moz-box-shadow:    0px 0px 10px 0px rgba(0,0,0,0.75);
-    box-shadow:         0px 0px 10px 0px rgba(0,0,0,0.75);
+    -webkit-box-shadow: 0px 0px 10px 0px rgba(68,157,68,0.8);
+    -moz-box-shadow:    0px 0px 10px 0px rgba(68,157,68,0.8);
+    box-shadow:         0px 0px 10px 0px rgba(68,157,68,0.8);
     button {
       margin-top: 13px;
+    }
+    input:active, input:focus {
+        -webkit-box-shadow: 0px 0px 10px 0px rgba(68,157,68,0.4);
+        -moz-box-shadow:    0px 0px 10px 0px rgba(68,157,68,0.4);
+        box-shadow:         0px 0px 10px 0px rgba(68,157,68,0.4);
+        border: 1px solid #449D44;
     }
 }
 
 .overlay {
     display: none;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(220,220,220,0.2);
     width: 100%;
     height: 100%;
     position: absolute;

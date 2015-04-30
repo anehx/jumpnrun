@@ -53,6 +53,8 @@ $(function() {
     hideSpinner()
     gameCore.init()
     initKeypress()
+    $(window).resize(fullscreen)
+    fullscreen()
   })
 
   function sendPos() {
@@ -103,6 +105,18 @@ $(function() {
     socket.emit('joinLobby', name)
     showSpinner('Waiting for opponent')
   })
+
+  function fullscreen() {
+    let ratio = config.world.x / config.world.y
+    let newRt = window.innerWidth / window.innerHeight
+
+    if (newRt >= ratio) {
+      $('#game').css({height: '100%', width: 'auto'})
+    }
+    else {
+      $('#game').css({height: 'auto', width: '100%'})
+    }
+  }
 
   setInterval(sendPos, 1000 / config.client.fps)
 });
