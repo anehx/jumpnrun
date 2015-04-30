@@ -6,8 +6,7 @@
     "run-backend": "grunt run-backend",
     "run-frontend": "grunt run-frontend",
     "server": "grunt server",
-    "test": "grunt test",
-    "clean-test": "grunt clean-test"
+    "test": "grunt test"
   },
   "dependencies": {
     "babel": "^5.0.12",

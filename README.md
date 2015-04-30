@@ -11,7 +11,6 @@ A nodejs jump n' run styled game written in ES6 style
 ## Requirements
 * nodejs or iojs
 * npm
-* grunt-cli
 * bower
 
 ## Docker
@@ -43,4 +42,4 @@ $ npm run server
 ```
 
 # Test
-Run `npm clean-test` to test (docker must be shutdown).
+Run `npm test` to test (docker must be shutdown).
