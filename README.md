@@ -43,4 +43,4 @@ $ npm run server
 ```
 
 # Test
-Run `npm test` to test (docker must be shutdown).
+Run `npm clean-test` to test (docker must be shutdown).

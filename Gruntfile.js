@@ -81,7 +81,8 @@ module.exports = function(grunt) {
   grunt.registerTask('test-frontend', [ 'jshint:frontend', 'jscs:frontend', 'build' ])
   grunt.registerTask('test-backend',  [ 'jshint:backend', 'jscs:backend' ])
   grunt.registerTask('test-grunt',    [ 'jshint:grunt', 'jscs:grunt' ])
-  grunt.registerTask('test',          [ 'clean', 'test-backend', 'test-frontend', 'test-grunt', 'clean' ])
+  grunt.registerTask('test',          [ 'test-backend', 'test-frontend', 'test-grunt' ])
+  grunt.registerTask('clean-test',    [ 'clean', 'test', 'clean' ])
 
   grunt.registerTask('build',         [ 'broccoli:prod:build' ])
   grunt.registerTask('clean',         [ 'shell:clean' ])
