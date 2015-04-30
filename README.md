@@ -23,4 +23,4 @@ $ docker-compose up
 Then navigate to http://localhost:8080 in your browser to play.
 
 # Test
-Run `grunt test` to test.
+Run `npm test` to test.
