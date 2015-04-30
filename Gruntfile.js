@@ -55,9 +55,18 @@ module.exports = function(grunt) {
       }
     }
 
+  , concurrent: {
+      server: {
+        tasks: [ 'run-frontend', 'run-backend' ]
+      , options: {
+          logConcurrentOutput: true
+        }
+      }
+    }
+
   , shell: {
       clean: {
-        command: 'npm cache clean && rm -rf tmp/ etc/ node_modules/ bower_components/'
+        command: 'sudo rm -rf tmp/ etc/ frontend/dist'
       }
     }
   })
@@ -67,14 +76,17 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-broccoli')
   grunt.loadNpmTasks('grunt-nodemon')
   grunt.loadNpmTasks('grunt-shell')
+  grunt.loadNpmTasks('grunt-concurrent')
 
   grunt.registerTask('test-frontend', [ 'jshint:frontend', 'jscs:frontend', 'build' ])
   grunt.registerTask('test-backend',  [ 'jshint:backend', 'jscs:backend' ])
-  grunt.registerTask('test',          [ 'test-backend', 'test-frontend', 'jshint:grunt', 'jscs:grunt' ])
+  grunt.registerTask('test-grunt',    [ 'jshint:grunt', 'jscs:grunt' ])
+  grunt.registerTask('test',          [ 'clean', 'test-backend', 'test-frontend', 'test-grunt', 'clean' ])
 
   grunt.registerTask('build',         [ 'broccoli:prod:build' ])
   grunt.registerTask('clean',         [ 'shell:clean' ])
 
   grunt.registerTask('run-backend',   [ 'nodemon:dev' ])
   grunt.registerTask('run-frontend',  [ 'broccoli:dev:serve' ])
+  grunt.registerTask('server',        [ 'concurrent:server' ])
 }

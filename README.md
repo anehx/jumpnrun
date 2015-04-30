@@ -17,10 +17,30 @@ A nodejs jump n' run styled game written in ES6 style
 ## Docker
 To run the game in a docker container, you need to install docker and docker-compose. Then run:
 ```shell
-$ npm install && bower install
+$ npm install
+$ bower install
 $ docker-compose up
 ```
 Then navigate to http://localhost:8080 in your browser to play.
 
+## Local
+To run it on your local machine, you need to install the requirements, then change the following
+line in `backend/common/config.js`:
+```javascript
+...
+    server: {
+        ...
+        url: 'http://localhost:3000'
+        ...
+    }
+...
+```
+After this, run:
+```shell
+$ npm install
+$ bower install
+$ npm run server
+```
+
 # Test
-Run `npm test` to test.
+Run `npm test` to test (docker must be shutdown).
