@@ -4,7 +4,7 @@ language: node_js
 node_js:
     - "0.12"
 
-sudo: false
+sudo: true
 
 cache:
     directories:
@@ -15,7 +15,7 @@ before_install:
     - npm install -g npm@^2
 
 install:
-    - npm install -g grunt-cli bower
+    - npm install -g bower
     - npm install
     - bower install
 
