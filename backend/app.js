@@ -84,6 +84,12 @@ sio.sockets.on('connection', function(client) {
     sio.sockets.in(client.gameID).emit('updateGoodies', game.world.goodies)
   })
 
+  client.on('exitGame', function() {
+    let game = gameServer.games[client.gameID]
+    client.broadcast.to(client.gameID).emit('playerLeft')
+    gameServer.quitGame(game)
+  })
+
   client.on('disconnect', function() {
     if (client.gameID) {
       let game = gameServer.games[client.gameID]

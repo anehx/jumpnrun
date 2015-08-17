@@ -6,17 +6,22 @@ import socket from './socket'
 $(function() {
   'use strict'
 
+  if (localStorage.getItem('playerName')) {
+    start()
+  }
+
   let defaultName = 'Player-' + Math.round(Math.random() * 1000000)
   $('#name').val(defaultName).prop('placeholder', defaultName)
   $('#search').on('click', start)
   $('#name').keyup(function(e) {
     if (e.which === 13) {
+      localStorage.setItem('playerName', $('#name').val())
       start()
     }
   })
 
   function start() {
-    window.name = $('#name').val() || defaultName
+    window.name = localStorage.getItem('playerName') || $('#name').val() || defaultName
     socket.emit('joinLobby', name)
     $('.lobby').hide()
     showSpinner('Waiting for opponent')
@@ -100,10 +105,16 @@ $(function() {
   })
 
   socket.on('playerLeft', function() {
-    $('#game').remove()
-    gameCore = undefined
-    socket.emit('joinLobby', name)
-    showSpinner('Waiting for opponent')
+    location.reload()
+  })
+
+  $('.menu-button#exit').on('click', function() {
+    socket.emit('exitGame')
+    location.reload()
+  })
+
+  $('.menu-button#cancel').on('click', function() {
+    $('.menu').animate({ height: 0, padding: 0, opacity: 0 })
   })
 
   function fullscreen() {
