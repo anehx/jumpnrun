@@ -1,7 +1,7 @@
 const config = {
   server: {
     port:        3000
-  , url:         'http://localhost:3000'
+  , url:         'http://adsy-event-02:3000'
   , physicsRate: 15
   , stateRate:   1000 / 45
   }
