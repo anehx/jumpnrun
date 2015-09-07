@@ -78,22 +78,31 @@ sio.sockets.on('connection', function(client) {
 
   client.on('scored', function() {
     let game = gameServer.games[client.gameID]
-    game.resetGoodies()
     client.score++
-    client.broadcast.to(client.gameID).emit('updateScore', client.score)
-    sio.sockets.in(client.gameID).emit('updateGoodies', game.world.goodies)
+
+    if (client.score < config.maxScore) {
+      game.resetGoodies()
+      client.broadcast.to(client.gameID).emit('updateScore', client.score)
+      sio.sockets.in(client.gameID).emit('updateGoodies', game.world.goodies)
+    }
+    else {
+      client.broadcast.to(client.gameID).emit('lost')
+      client.emit('won')
+      gameServer.quitGame(game)
+    }
   })
 
   client.on('exitGame', function() {
     let game = gameServer.games[client.gameID]
-    client.broadcast.to(client.gameID).emit('playerLeft')
+    client.broadcast.to(client.gameID).emit('won')
+    client.emit('lost')
     gameServer.quitGame(game)
   })
 
   client.on('disconnect', function() {
     if (client.gameID) {
       let game = gameServer.games[client.gameID]
-      client.broadcast.to(client.gameID).emit('playerLeft')
+      client.broadcast.to(client.gameID).emit('won')
       gameServer.quitGame(game)
     }
     console.log('\tsocket.io::\tclient ' + client.id + ' disconnected')

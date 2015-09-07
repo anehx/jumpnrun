@@ -24,7 +24,7 @@ $(function() {
     window.name = localStorage.getItem('playerName') || $('#name').val() || defaultName
     socket.emit('joinLobby', name)
     $('.lobby').hide()
-    showSpinner('Waiting for opponent')
+    showSpinner('Waiting for opponent', true)
   }
 
   createjs.Ticker.addEventListener('tick', tick)
@@ -72,18 +72,44 @@ $(function() {
     }
   }
 
-  function showSpinner(text) {
+  function showSpinner(text, points) {
+    $('.overlay div').html('')
     $('.overlay').fadeIn()
+    let style = points ? '' : 'style="display:none"'
+
     let i = 0
-    setInterval(function() {
+    window.interval = setInterval(function() {
       i = ++i % 3
-      $('.overlay div').html(text + '<br>' + '.'.repeat(i + 1))
+      let pts = '.'.repeat(i + 1)
+      $('.overlay div').html(`${text}<br><span ${style}>${pts}</span>`)
     }, 1000)
   }
 
   function hideSpinner() {
+    window.clearInterval(window.interval)
     $('.overlay').fadeOut()
+    $('.overlay div').html('')
   }
+
+  socket.on('won', function() {
+    $('#game').remove()
+    gameCore = undefined
+    showSpinner('You won!', false)
+    setTimeout(function() {
+      hideSpinner()
+      start()
+    }, 5000)
+  })
+
+  socket.on('lost', function() {
+    $('#game').remove()
+    gameCore = undefined
+    showSpinner('You lost!', false)
+    setTimeout(function() {
+      hideSpinner()
+      start()
+    }, 5000)
+  })
 
   socket.on('updatePosition', function(data) {
     gameCore.players.other.position = data.position
@@ -104,13 +130,8 @@ $(function() {
     gameCore.goodieContainer.updateGoodieTime(data.id, data.timeLeft)
   })
 
-  socket.on('playerLeft', function() {
-    location.reload()
-  })
-
   $('.menu-button#exit').on('click', function() {
     socket.emit('exitGame')
-    location.reload()
   })
 
   $('.menu-button#cancel').on('click', function() {

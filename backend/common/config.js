@@ -1,4 +1,6 @@
 const config = {
+  maxScore: 30,
+
   server: {
     port:        3000
   , url:         'http://adsy-event-02:3000'
