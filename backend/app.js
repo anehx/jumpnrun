@@ -1,11 +1,14 @@
-'use strict'
-
 import gameServer from './models/server'
 import io         from 'socket.io'
 import http       from 'http'
 import config     from './common/config'
 
-let app = http.createServer()
+let app = http.createServer(function(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Request-Methods', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST')
+  res.setHeader('Access-Control-Allow-Headers', '*')
+})
 
 app.listen(config.server.port)
 console.log('\tapp.js::\tserver listening on port ' + config.server.port + '\n')
